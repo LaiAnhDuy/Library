@@ -1,7 +1,5 @@
-import { createTheme } from "@mui/material";
+import { createTheme } from '@mui/material';
 
-export const theme = createTheme({
-
-})
+export const theme = createTheme({});
 
 // customize theme MUI
