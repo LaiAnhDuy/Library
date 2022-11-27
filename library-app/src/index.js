@@ -4,7 +4,7 @@ import './index.css';
 // import { store } from './redux/store';
 // import { Provider } from 'react-redux';
 import { ThemeProvider } from '@mui/material';
-import { theme } from './components/theme/theme';
+import { theme } from './theme/theme';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 
