@@ -1,5 +1,4 @@
-import logo from './logo.svg';
-import './App.css';
+// import './App.css';
 import { CustomerRoutes } from './routes/routes';
 
 function App() {
