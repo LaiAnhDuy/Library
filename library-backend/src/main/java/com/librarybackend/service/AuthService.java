@@ -1,5 +1,7 @@
 package com.librarybackend.service;
 
+import com.librarybackend.dto.UserDTO;
+import com.librarybackend.entity.UserEntity;
 import com.librarybackend.security.JwtRequest;
 import com.librarybackend.security.JwtResponse;
 import com.librarybackend.security.JwtUtil;
@@ -20,6 +22,9 @@ public class AuthService {
     @Autowired
     private JwtUtil jwtUtil;
 
+    @Autowired
+    private UserService userService;
+
     public JwtResponse signIn(JwtRequest requestPayload) {
         UsernamePasswordAuthenticationToken
                 authenticationObject = new UsernamePasswordAuthenticationToken(requestPayload.getUsername(), requestPayload.getPassword());
@@ -27,5 +32,12 @@ public class AuthService {
         LibraryUserDetails userDetails = (LibraryUserDetails) authentication.getPrincipal();
         String token = jwtUtil.generateToken(userDetails);
         return new JwtResponse(userDetails.getUserEntity().getCode(), userDetails.getUsername(), "user", token);
+    }
+
+    public UserDTO signUp(UserDTO userDTO) {
+        UserEntity userToSave = new UserEntity(userDTO);
+        userService.save(userToSave);
+        userDTO = new UserDTO(userToSave);
+        return userDTO;
     }
 }

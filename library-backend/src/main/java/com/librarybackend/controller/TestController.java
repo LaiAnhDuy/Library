@@ -1,6 +1,6 @@
 package com.librarybackend.controller;
 
-import com.librarybackend.dto.ServerResponse;
+import com.librarybackend.dto.ServerResponseDTO;
 import com.librarybackend.entity.UserEntity;
 import com.librarybackend.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,9 +16,9 @@ public class TestController {
     private UserRepository userRepository;
 
     @GetMapping("/signin")
-    public ServerResponse signIn() {
+    public ServerResponseDTO signIn() {
         UserEntity userEntity = userRepository.findByUsername("duongnv");
 
-        return new ServerResponse(1, "Thanh cong", userEntity);
+        return new ServerResponseDTO(1, "Thanh cong", userEntity);
     }
 }

@@ -1,7 +1,7 @@
 package com.librarybackend.security;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.librarybackend.dto.ServerResponse;
+import com.librarybackend.dto.ServerResponseDTO;
 import com.librarybackend.exception.InvalidTokenException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -60,7 +60,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
             logger.error("Invalid token");
             exception.printStackTrace();
             response.setStatus(HttpStatus.UNAUTHORIZED.value());
-            ServerResponse responseDTO = new ServerResponse(
+            ServerResponseDTO responseDTO = new ServerResponseDTO(
                     HttpStatus.UNAUTHORIZED.value(),
                     "Không có quyền truy cập, token không hợp lệ",
                     null);
