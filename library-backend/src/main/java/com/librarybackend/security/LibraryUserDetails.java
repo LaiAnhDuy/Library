@@ -57,7 +57,7 @@ public class LibraryUserDetails implements UserDetails {
 
     @Override
     public boolean isEnabled() {
-        return !userEntity.getDeleted();
+        return !userEntity.isDeleted();
     }
 
     public UserEntity getUserEntity() {
