@@ -1,7 +1,9 @@
 package com.librarybackend.aop;
 
 import com.librarybackend.dto.ErrorResponseDTO;
+import com.librarybackend.dto.ServerResponseDTO;
 import com.librarybackend.exception.*;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -9,68 +11,58 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
 @ControllerAdvice
+@Slf4j
 public class MyExceptionHandler {
-    private ErrorResponseDTO errorResponse = new ErrorResponseDTO();
 
     @ExceptionHandler(WrongUsernamPasswordException.class)
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
     @ResponseBody
-    public ErrorResponseDTO wrongUsernamePasswordException(WrongUsernamPasswordException exception) {
+    public ServerResponseDTO wrongUsernamePasswordException(WrongUsernamPasswordException exception) {
         System.out.println("Vao controller advice, sai ten dang nhap");
-        errorResponse.setStatus(HttpStatus.UNAUTHORIZED.value());
-        errorResponse.setMessage(exception.getMessage());
-        return errorResponse;
+        return ServerResponseDTO.error(HttpStatus.UNAUTHORIZED.value(), exception.getMessage());
     }
 
     @ExceptionHandler(InvalidTokenException.class)
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
     @ResponseBody
-    public ErrorResponseDTO invalidToken(InvalidTokenException exception) {
+    public ServerResponseDTO invalidToken(InvalidTokenException exception) {
         System.out.println("Controller advice, token khong hop le");
-        errorResponse.setStatus(HttpStatus.UNAUTHORIZED.value());
-        errorResponse.setMessage(exception.getMessage());
-        return errorResponse;
+        return ServerResponseDTO.error(HttpStatus.UNAUTHORIZED.value(), exception.getMessage());
     }
 
     @ExceptionHandler(UnauthorizeException.class)
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
     @ResponseBody
-    public ErrorResponseDTO unauthorize(UnauthorizeException exception) {
+    public ServerResponseDTO unauthorize(UnauthorizeException exception) {
         System.out.println("Controller advice, unauthorize");
-        errorResponse.setStatus(HttpStatus.UNAUTHORIZED.value());
-        errorResponse.setMessage(exception.getMessage());
-        return errorResponse;
+        return ServerResponseDTO.error(HttpStatus.UNAUTHORIZED.value(), exception.getMessage());
     }
 
     @ExceptionHandler(DuplicateAccountException.class)
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
     @ResponseBody
-    public ErrorResponseDTO duplicateAccount(DuplicateAccountException exception) {
+    public ServerResponseDTO duplicateAccount(DuplicateAccountException exception) {
         System.out.println("Controller advice, duplicate");
-        errorResponse.setStatus(HttpStatus.UNAUTHORIZED.value());
-        errorResponse.setMessage(exception.getMessage());
-        return errorResponse;
+        return ServerResponseDTO.error(HttpStatus.UNAUTHORIZED.value(), exception.getMessage());
     }
 
     @ExceptionHandler(UnknowException.class)
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
     @ResponseBody
-    public ErrorResponseDTO unknowError(UnknowException exception) {
+    public ServerResponseDTO unknowError(UnknowException exception) {
+        log.info("lỗi");
+        log.trace("lỗi", exception);
         exception.printStackTrace();
         System.out.println("Controller advice, unknow exception!");
-        errorResponse.setStatus(HttpStatus.UNAUTHORIZED.value());
-        errorResponse.setMessage(exception.getMessage());
-        return errorResponse;
+        return ServerResponseDTO.error(HttpStatus.UNAUTHORIZED.value(), exception.getMessage());
     }
 
     @ExceptionHandler(DisableAccountException.class)
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
     @ResponseBody
-    public ErrorResponseDTO disableAccount(DisableAccountException exception) {
+    public ServerResponseDTO disableAccount(DisableAccountException exception) {
         exception.printStackTrace();
         System.out.println("Controller advice, disable account");
-        errorResponse.setStatus(HttpStatus.UNAUTHORIZED.value());
-        errorResponse.setMessage(exception.getMessage());
-        return errorResponse;
+        return ServerResponseDTO.error(HttpStatus.UNAUTHORIZED.value(), exception.getMessage());
     }
 }

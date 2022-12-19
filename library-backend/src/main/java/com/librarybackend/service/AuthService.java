@@ -1,7 +1,6 @@
 package com.librarybackend.service;
 
 import com.librarybackend.dto.UserDTO;
-import com.librarybackend.entity.UserEntity;
 import com.librarybackend.security.JwtRequest;
 import com.librarybackend.security.JwtResponse;
 import com.librarybackend.security.JwtUtil;
@@ -10,7 +9,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -35,9 +33,7 @@ public class AuthService {
     }
 
     public UserDTO signUp(UserDTO userDTO) {
-        UserEntity userToSave = new UserEntity(userDTO);
-        userService.save(userToSave);
-        userDTO = new UserDTO(userToSave);
-        return userDTO;
+        UserDTO createdUser = userService.createUser(userDTO);
+        return createdUser;
     }
 }

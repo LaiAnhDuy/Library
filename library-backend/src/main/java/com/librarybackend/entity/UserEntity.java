@@ -35,5 +35,11 @@ public class UserEntity extends BaseEntity{
         this.email = userDTO.getEmail();
         this.fullname = userDTO.getFullname();
         this.roleId = userDTO.getRoleId();
+        this.id = userDTO.getId();
+        this.createdDate = userDTO.getCreatedDate();
+        this.createdBy = userDTO.getCreatedBy();
+        this.modifiedDate = userDTO.getModifiedDate();
+        this.modifiedBy = userDTO.getModifiedBy();
+        this.deleted = userDTO.isDeleted();
     }
 }

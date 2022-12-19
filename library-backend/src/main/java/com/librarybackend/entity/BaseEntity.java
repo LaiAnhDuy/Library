@@ -38,5 +38,5 @@ public class BaseEntity {
     protected Long modifiedBy;
 
     @Column(name = "deleted")
-    protected Boolean deleted;
+    protected boolean deleted;
 }
