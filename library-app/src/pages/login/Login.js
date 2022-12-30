@@ -13,7 +13,7 @@ export default function Login() {
       <Logo />
       <Box className={classes.section}>
         <Typography variant="h4" sx={{ px: 5, mt: 10, mb: 5, fontWeight: 'bold' }}>
-          Welcome to library
+          Chào mừng bạn đến với thư viện
         </Typography>
         <img src={background} alt="Login" className={classes.background}/>
       </Box>
@@ -23,12 +23,12 @@ export default function Login() {
             <LockOutlinedIcon sx={{ color: '#fff'}}/>
           </Box>
           <Typography variant='h5' sx={{ mb: 2 }}> 
-            Sign in to library
+            Đăng nhập
           </Typography>
           <LoginForm />
           <Box className={classes.otherFeature}>
-             <Link to='/forgot-password' className={classes.link}>Forgot password?</Link>
-             <Link to='/register' className={classes.link}>Don't have an account? Register here</Link>
+             <Link to='/forgot-password' className={classes.link}>Quên mật khẩu?</Link>
+             <Link to='/register' className={classes.link}>Bạn chưa có tài khoản? Đăng kí tại đây</Link>
           </Box>
         </Box>
       </Box>
