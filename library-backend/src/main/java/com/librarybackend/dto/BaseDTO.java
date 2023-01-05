@@ -1,20 +1,22 @@
 package com.librarybackend.dto;
 
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
-import java.sql.Timestamp;
+import java.time.LocalDateTime;
 
-@Data
-@AllArgsConstructor
+@Getter
+@Setter
 @NoArgsConstructor
+@AllArgsConstructor
 public abstract class BaseDTO {
     protected Long id;
     protected String code;
-    protected Timestamp createdDate;
+    protected LocalDateTime createdDate;
     protected Long createdBy;
-    protected Timestamp modifiedDate;
+    protected LocalDateTime modifiedDate;
     protected Long modifiedBy;
     protected boolean deleted;
 }

@@ -1,17 +1,22 @@
 package com.librarybackend.entity;
 
 import com.librarybackend.dto.UserDTO;
-import lombok.Data;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
+import java.time.LocalDate;
 
 @Entity
 @Table(name = "user")
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
+@AllArgsConstructor
 public class UserEntity extends BaseEntity{
 
     @Column(name = "username")
@@ -25,6 +30,12 @@ public class UserEntity extends BaseEntity{
 
     @Column(name = "email")
     private String email;
+
+    @Column(name = "phone")
+    private String phone;
+
+    @Column(name = "date_of_birth")
+    private LocalDate dateOfBirth;
 
     @Column(name = "role_id")
     private Long roleId;

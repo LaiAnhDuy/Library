@@ -1,17 +1,16 @@
 package com.librarybackend.dto;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.librarybackend.entity.UserEntity;
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
-@Data
-@AllArgsConstructor
+@Getter
+@Setter
 @NoArgsConstructor
+@AllArgsConstructor
 public class UserDTO extends BaseDTO{
-
-    @JsonIgnore
     private String username;
     private String password;
     private String fullname;
@@ -20,8 +19,8 @@ public class UserDTO extends BaseDTO{
 
     public UserDTO(UserEntity userEntity) {
         this.fullname = userEntity.getFullname();
-        this.username = userEntity.getUsername();
-        this.password = userEntity.getPassword();
+//        this.username = userEntity.getUsername();
+        this.password = "";
         this.email = userEntity.getEmail();
         this.roleId = userEntity.getRoleId();
         this.id = userEntity.getId();

@@ -7,4 +7,5 @@ public abstract class BaseController<T extends BaseService> {
 
     @Autowired
     public T service;
+
 }
