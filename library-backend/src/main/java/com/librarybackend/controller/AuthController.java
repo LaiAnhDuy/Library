@@ -1,6 +1,6 @@
 package com.librarybackend.controller;
 
-import com.librarybackend.dto.ServerResponseDTO;
+import com.librarybackend.dto.ServerResponse;
 import com.librarybackend.dto.UserDTO;
 import com.librarybackend.exception.*;
 import com.librarybackend.security.JwtRequest;
@@ -9,8 +9,9 @@ import com.librarybackend.service.AuthService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.http.HttpStatus;
-import org.springframework.security.authentication.*;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.DisabledException;
+import org.springframework.security.authentication.InsufficientAuthenticationException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -26,10 +27,10 @@ public class AuthController {
     private AuthService authService;
 
     @PostMapping("/signin")
-    public ServerResponseDTO signin(@RequestBody JwtRequest requestPayload) {
+    public ServerResponse signin(@RequestBody JwtRequest requestPayload) {
         try {
             JwtResponse response = authService.signIn(requestPayload);
-            return new ServerResponseDTO(HttpStatus.OK.value(), "Đăng nhập thành công!", response);
+            return ServerResponse.success("Đăng nhập thành công!", response);
         } catch (BadCredentialsException | UsernameNotFoundException e) {
             throw new WrongUsernamPasswordException("Sai tên đăng nhập hoặc mật khẩu");
         } catch (InsufficientAuthenticationException e) {
@@ -43,10 +44,10 @@ public class AuthController {
     }
 
     @PostMapping("/signup")
-    public ServerResponseDTO signup(@RequestBody UserDTO userDTO) {
+    public ServerResponse signup(@RequestBody UserDTO userDTO) {
         try {
             UserDTO userDto = authService.signUp(userDTO);
-            return new ServerResponseDTO(HttpStatus.OK.value(), "Đăng ký thành công!", userDto);
+            return ServerResponse.success("Đăng ký thành công!",userDto);
         } catch (DataIntegrityViolationException exception) {
             throw new DuplicateAccountException("Trùng tên đăng nhập!");
         } catch (Exception exception) {
