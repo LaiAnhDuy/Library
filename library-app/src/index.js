@@ -1,21 +1,23 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import "./index.css"
-// import { store } from './redux/store';
-// import { Provider } from 'react-redux';
+import { store } from './redux/store';
+import { Provider } from 'react-redux';
 import { ThemeProvider } from '@mui/material';
 import { theme } from './theme/theme';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
+import AdminOrderDetail from './components/admin/AdminOrderDetail';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
-    {/* <Provider store={store}> */}
+    <Provider store={store}>
     <ThemeProvider theme={theme}>
       <App />
+      <AdminOrderDetail />
     </ThemeProvider>
-    {/* </Provider> */}
+    </Provider>
   </React.StrictMode>,
 );
 

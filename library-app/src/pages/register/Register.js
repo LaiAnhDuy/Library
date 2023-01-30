@@ -23,7 +23,7 @@ export default function Register() {
             <LockOutlinedIcon sx={{ color: '#fff'}}/>
           </Box>
           <Typography variant='h5' sx={{ mb: 2 }}> 
-            Đăn kí tài khoản thư viện
+            Đăng kí tài khoản thư viện
           </Typography>
           <RegisterForm />
           <Box className={classes.otherFeature}>
