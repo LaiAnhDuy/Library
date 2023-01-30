@@ -1,8 +1,13 @@
-// import './App.css';
+import AdminOrderDetail from './components/admin/AdminOrderDetail';
 import { CustomerRoutes } from './routes/routes';
 
 function App() {
-  return <CustomerRoutes />;
+  return (
+    <>
+      <CustomerRoutes />
+    </>
+  )
+      
 }
 
 export default App;

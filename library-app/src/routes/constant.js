@@ -1,5 +1,7 @@
 import { path } from '../constant/path';
 import AdminBook from '../pages/admin/AdminBook';
+import AdminOrder from '../pages/admin/AdminOrder';
+import AdminUser from '../pages/admin/AdminUser';
 import DashBoard from '../pages/admin/DashBoard';
 import BookDetail from '../pages/book/BookDetail';
 import Home from '../pages/home/Home';
@@ -45,5 +47,13 @@ export const PageRoutes = [
   {
     path: path.ADMIN_BOOK,
     element: AdminBook
+  },
+  {
+    path: path.ADMIN_USER,
+    element: AdminUser
+  },
+  {
+    path: path.ADMIN_ORDER,
+    element: AdminOrder
   }
 ];
