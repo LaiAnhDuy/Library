@@ -40,7 +40,7 @@ public class UserService extends BaseService<UserRepository, UserEntity> {
     }
 
     public void toggleDeleted(String userCode) {
-        UserEntity userToToggle = findByCode(userCode);
+        UserEntity userToToggle = repository.findByCode(userCode);
         userToToggle.setDeleted(!userToToggle.isDeleted());
         update(userToToggle);
     }
