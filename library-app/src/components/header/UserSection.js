@@ -4,7 +4,7 @@ import SettingsIcon from '@mui/icons-material/Settings';
 import AccountBoxIcon from '@mui/icons-material/AccountBox';
 import ManageAccountsIcon from '@mui/icons-material/ManageAccounts';
 import LogoutIcon from '@mui/icons-material/Logout';
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 const ListItem = [
     {
@@ -17,18 +17,19 @@ const ListItem = [
         icon: ManageAccountsIcon,
         path: '/user/change-password',
     },
-    {
-        name: 'Đăng xuất',
-        path: 'user/logout',
-        icon: LogoutIcon
-    },
 ]
 
 export default function UserSection() {
     const [anchorEl, setAnchorEl] = React.useState(null);
+    const navigate = useNavigate();
 
     const handleToggle = (event) => {
         setAnchorEl(anchorEl ? null : event.currentTarget);
+    }
+
+    const handleLogout = () => {
+        localStorage.clear();
+        navigate(0);
     }
 
     const open = Boolean(anchorEl);
@@ -89,6 +90,25 @@ export default function UserSection() {
                                 </ListItemButton>
                             )
                         })}
+                        <ListItemButton
+                            onClick={handleLogout}
+                            sx={{
+                                minHeight: 48,
+                                justifyContent: open ? 'initial' : 'center',
+                                px: 2.5,
+                            }}
+                        >
+                            <ListItemIcon
+                                sx={{
+                                    minWidth: 0,
+                                    mr: open ? 3 : 'auto',
+                                    justifyContent: 'center',
+                                }}
+                            >
+                                {<LogoutIcon />}
+                            </ListItemIcon>
+                            <ListItemText primary={"Đăng xuất"} sx={{ opacity: open ? 1 : 0 }} />
+                        </ListItemButton>
                     </List>
                 </Card>
             </Popper>

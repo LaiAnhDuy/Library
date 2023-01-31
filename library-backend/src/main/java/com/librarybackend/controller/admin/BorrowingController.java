@@ -20,7 +20,7 @@ public class BorrowingController extends BaseController<BorrowingService> {
     public ServerResponse createBorrowing(@RequestBody List<BorrowingDTO> borrowingDTOList) {
         try {
             List<BorrowingDTO> createdBorrowingList = service.createBorrowing(borrowingDTOList);
-            return ServerResponse.success("Tạo danh sách mượn!", createdBorrowingList);
+            return ServerResponse.success("Tạo danh sách mượn thành công!", createdBorrowingList);
         } catch (Exception e) {
             throw new UnknowException("Unknow exception createBorrowing!");
         }
