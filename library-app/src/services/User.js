@@ -18,3 +18,9 @@ export const apiGetAllOrder = async(page, size) => {
     const response = await api.get(url);
     return response;
 }
+
+export const apiToggleUser = async(userCode) => {
+    let url = dbAdminService + '/user/' + userCode;
+    const response = await api.delete(url);
+    return response;
+}

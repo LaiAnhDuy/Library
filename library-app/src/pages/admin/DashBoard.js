@@ -5,8 +5,32 @@ import BookmarkIcon from '@mui/icons-material/Bookmark';
 import GroupsIcon from '@mui/icons-material/Groups';
 import GroupAddIcon from '@mui/icons-material/GroupAdd';
 import AutoStoriesIcon from '@mui/icons-material/AutoStories';
+import { useEffect, useState } from "react";
+import { apiGetAnalytic } from "../../services/Analytic";
 
 export default function DashBoard(props) {
+
+    const [analytic, setAnalytic] = useState({
+        totalBooks: '',
+        totalBorrowing: '',
+        totalReader: '',
+        totalNewUser: '',
+    })
+
+    useEffect(() => {
+        const getAnalytic = async() => {
+            try {
+                const response = await apiGetAnalytic();
+                if (response.data.status === 200) {
+                    setAnalytic(response.data.data);
+                }
+            } catch(err) {
+                console.log(err);
+            }
+        }
+
+        getAnalytic();
+    }, [])
 
     const RenderAnalytic = (props) => {
         const { title, total, Icon, color, bgcolor } = props;
@@ -51,7 +75,7 @@ export default function DashBoard(props) {
                 <Grid item xs={3}>
                     <RenderAnalytic
                         title="Tổng số sách"
-                        total={10}
+                        total={analytic.totalBooks}
                         Icon={BookmarkIcon}
                         color="#ff0000"
                         bgcolor="#ffeaea"
@@ -60,7 +84,7 @@ export default function DashBoard(props) {
                 <Grid item xs={3}>
                     <RenderAnalytic
                         title="Số lượng sách đang mượn"
-                        total={10}
+                        total={analytic.totalBorrowing}
                         Icon={AutoStoriesIcon}
                         color="#3cb878"
                         bgcolor="#d1f3e0"
@@ -69,7 +93,7 @@ export default function DashBoard(props) {
                 <Grid item xs={3}>
                     <RenderAnalytic
                         title="Tổng số đọc giả"
-                        total={10}
+                        total={analytic.totalReader}
                         Icon={GroupsIcon}
                         color="#ffa001"
                         bgcolor="#fff2d8"
@@ -78,7 +102,7 @@ export default function DashBoard(props) {
                 <Grid item xs={3}>
                     <RenderAnalytic
                         title="Đọc giả mới"
-                        total={10}
+                        total={analytic.totalNewUser}
                         Icon={GroupAddIcon}
                         color="#3f7afc"
                         bgcolor="#e1f1ff"

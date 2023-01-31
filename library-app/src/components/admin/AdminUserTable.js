@@ -19,7 +19,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import LockIcon from '@mui/icons-material/Lock';
 import LockOpenIcon from '@mui/icons-material/LockOpen';
 import { Link } from 'react-router-dom';
-import { apiGetAllUser, apiUpdateUser } from '../../services/User';
+import { apiGetAllUser, apiToggleUser, apiUpdateUser } from '../../services/User';
 import { openAlertModal } from '../../redux/alertSlice';
 import { closeLoadingModal, openLoadingModal } from '../../redux/loadingSlice';
 import { reloadUser } from '../../redux/reloadSlice';
@@ -177,7 +177,7 @@ export default function AdminUserTable() {
             }
             
             dispatch(openLoadingModal());
-            const response = await apiUpdateUser(user);
+            const response = await apiToggleUser(user.code);
             dispatch(closeLoadingModal());
             if (response.status === 200) {
                 dataAlert = { ...dataAlert, severity: 'success', isOpen: true, message: messageSuccess };
