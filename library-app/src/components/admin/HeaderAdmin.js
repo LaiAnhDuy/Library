@@ -23,6 +23,7 @@ import LogoImg from '../../assets/images/Logo.png'
 import UserSection from '../header/UserSection';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import InventoryIcon from '@mui/icons-material/Inventory';
+import CategoryIcon from '@mui/icons-material/Category';
 
 const drawerWidth = 240;
 
@@ -98,6 +99,11 @@ const ListItem = [
         path: '/admin'
     },
     {
+        name: 'Quản lý loại sách',
+        icon: CategoryIcon,
+        path: '/admin/categories'
+    },
+    {
         name: 'Quản lý sách',
         icon: BookIcon,
         path: '/admin/books',
@@ -111,7 +117,7 @@ const ListItem = [
         name: 'Quản lý thuê sách',
         path: '/admin/orders',
         icon: InventoryIcon
-    }
+    },
 ]
 
 export default function HeaderAdmin() {

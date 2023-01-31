@@ -10,4 +10,5 @@ export const path = {
   ADMIN_BOOK: '/admin/books',
   ADMIN_USER: '/admin/users',
   ADMIN_ORDER: '/admin/orders',
+  ADMIN_CATEGORY: '/admin/categories',
 };
