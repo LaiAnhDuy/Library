@@ -84,6 +84,8 @@ public class BorrowingService extends BaseService<BorrowingRepository, Borrowing
                 .map(BorrowingDTO::new)
                 .map(borrowingDTO -> {
                     borrowingDTO.setBook(mapBookEntityById.get(borrowingDTO.getBookId()));
+                    borrowingDTO.setTotalItems(borrowingPage.getTotalElements());
+                    borrowingDTO.setTotalPages(borrowingPage.getTotalPages());
                     return borrowingDTO;
                 })
                 .collect(Collectors.toList());
