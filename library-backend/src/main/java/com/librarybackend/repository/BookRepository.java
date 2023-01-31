@@ -10,4 +10,5 @@ import org.springframework.stereotype.Repository;
 public interface BookRepository extends BaseRepository<BookEntity> {
 
     Page<BookEntity> findByCategoryIdAndDeletedFalse(Long id, Pageable pageable);
+    int countDistinctByDeletedFalse();
 }

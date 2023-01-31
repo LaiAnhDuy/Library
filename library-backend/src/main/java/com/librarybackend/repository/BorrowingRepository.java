@@ -9,5 +9,6 @@ import org.springframework.stereotype.Repository;
 public interface BorrowingRepository extends BaseRepository<BorrowingEntity> {
 
     Page<BorrowingEntity> findByUserIdAndDeletedFalse(Long userId, Pageable pageable);
+    int countDistinctByDeletedFalseAndReturnedFalse();
 
 }
