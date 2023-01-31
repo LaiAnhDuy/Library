@@ -16,13 +16,15 @@ import IconButton from '@mui/material/IconButton';
 import Tooltip from '@mui/material/Tooltip';
 import FilterListIcon from '@mui/icons-material/FilterList';
 import { visuallyHidden } from '@mui/utils';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { Card, CardContent, Grid, InputAdornment, SvgIcon, TextField, useMediaQuery, useTheme } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { Link } from 'react-router-dom';
 import { openOrderModal } from '../../redux/orderSlice';
+import { apiGetAllOrder } from '../../services/Order';
+import { formatDate } from '../../utils/format-date';
 
 function descendingComparator(a, b, orderBy) {
     if (b[orderBy] < a[orderBy]) {
@@ -64,14 +66,24 @@ const headCells = [
         label: 'Sách mượn',
     },
     {
-        id: 'deposit',
+        id: 'price',
         disablePadding: false,
         label: 'Tiền cọc',
     },
     {
-        id: 'status',
+        id: 'borrowDate',
+        disablePadding: false,
+        label: 'Ngày Mượn'
+    },
+    {
+        id: 'returned',
         disablePadding: false,
         label: 'Trạng thái'
+    },
+    {
+        id: 'returnedDate',
+        disablePadding: false,
+        label: 'Ngày trả'
     },
     {
         id: 'action',
@@ -80,58 +92,6 @@ const headCells = [
     },
 ];
 
-const listOrder = [
-    {
-        id: 1,
-        user: "Nguyễn Hoàng Thanh",
-        book: "Đại số tuyến tính",
-        deposit: "1000000 VNĐ",
-        dateOfHire: "4/1/2023",
-        dateOfPay: "25/1/2023",
-        description: "No",
-        status: 1
-    },
-    {
-        id: 2,
-        user: "Nguyễn Hoàng Thanh",
-        book: "Đại số tuyến tính",
-        deposit: "1000000 VNĐ",
-        dateOfHire: "4/1/2023",
-        dateOfPay: "25/1/2023",
-        description: "No",
-        status: 2
-    },
-    {
-        id: 3,
-        user: "Nguyễn Hoàng Thanh",
-        book: "Đại số tuyến tính",
-        deposit: "1000000 VNĐ",
-        dateOfHire: "4/1/2023",
-        dateOfPay: "25/1/2023",
-        description: "No",
-        status: 3
-    },
-    {
-        id: 4,
-        user: "Nguyễn Hoàng Thanh",
-        book: "Đại số tuyến tính",
-        deposit: "1000000 VNĐ",
-        dateOfHire: "4/1/2023",
-        dateOfPay: "25/1/2023",
-        description: "No",
-        status: 1
-    },
-    {
-        id: 5,
-        user: "Nguyễn Hoàng Thanh",
-        book: "Đại số tuyến tính",
-        deposit: "1000000 VNĐ",
-        dateOfHire: "4/1/2023",
-        dateOfPay: "25/1/2023",
-        description: "No",
-        status: 3
-    },
-]
 
 function BasicTable(props) {
     const { order, orderBy, onRequestSort } =
@@ -185,9 +145,36 @@ export default function AdminOrderTable() {
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(5);
     const [count, setCount] = useState(5);
-    const [orders, setOrders] = useState(listOrder);
-    const [searchBook, setSearchBook] = useState("");
+    const [orders, setOrders] = useState([]);
+    const [user, setUser] = useState(null);
+    const reload = useSelector(state => state.reload.data);
     const dispatch = useDispatch();
+
+    useEffect(() => {
+        const getOrders = async() => {
+            try {
+                const response = await apiGetAllOrder(page, rowsPerPage, user);
+                if (response.data.status === 200) {
+                    let orderDatas = response.data.data.map((p) => {
+                        return {
+                            ...p,
+                            user: p.userId,
+                            book: p.book.title,
+                            borrowDate: p.borrowDate === null ? null : formatDate(p.borrowDate),
+                            dueDate: p.dueDate === null ? null : formatDate(p.dueDate),
+                            returnedDate: p.returnedDate === null ? null : formatDate(p.returnedDate)
+                        }
+                    })
+
+                    setOrders(orderDatas);
+                }
+            } catch(err) {
+                console.log(err);
+            }
+        }
+
+        getOrders();
+    }, [page, rowsPerPage, user, reload.order])
 
     const handleRequestSort = (event, property) => {
         const isAsc = orderBy === property && order === 'asc';
@@ -204,16 +191,12 @@ export default function AdminOrderTable() {
         setPage(0);
     };
 
-    const handleChangeSearchCustomer = (event) => {
-        setSearchBook(event.target.value);
-    }
-
     const emptyRows =
         page > 0 ? Math.max(0, (1 + page) * rowsPerPage - count) : 0;
 
     return (
         <Box sx={{ width: '100%' }}>
-            <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
+            {/* <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
                 <Box sx={{ width: 400 }}>
                     <TextField
                         fullWidth
@@ -244,7 +227,7 @@ export default function AdminOrderTable() {
                         }}
                     />
                 </Box>
-            </Box>
+            </Box> */}
             <Paper sx={{ width: '100%', mb: 2 }}>
                 <TableContainer>
                     <Table
@@ -269,28 +252,28 @@ export default function AdminOrderTable() {
                                         >
                                             <TableCell ></TableCell>
                                             {headCells.map((p, index) => {
-                                                return p.id === 'status' ? (
+                                                return p.id === 'returned' ? (
                                                     <TableCell
                                                         key={index}
-                                                        component="th"
-                                                        id={labelId}
-                                                        scope="row"
-                                                        padding="none"
+                                                        // component="th"
+                                                        // id={labelId}
+                                                        // scope="row"
+                                                        // padding="none"
                                                         sx={{ minWidth: '12em' }}
                                                     >
                                                         <Box 
                                                             variant="contained"
                                                             sx={{ 
-                                                                backgroundColor: row[p.id] === 1 ? '#6633CC' : row[p.id] === 2 ? '#33CC00' : '#FF3030',
+                                                                backgroundColor: row[p.id] === false ? '#6633CC' : row[p.id] === true ? '#33CC00' : '#FF3030',
                                                                 cursor: 'default',
-                                                                width: '30%',
+                                                                width: '50%',
                                                                 color: '#fff',
                                                                 borderRadius: '12px',
                                                                 textAlign: 'center',
                                                                 padding: '2px'
                                                             }}
                                                         >
-                                                            {row[p.id] === 1 ? 'Đang thuê' : row[p.id] === 2 ? 'Đã trả' : 'Quán hạn'}
+                                                            {row[p.id] === false ? 'Đang thuê' : row[p.id] === true ? 'Đã trả' : 'Quán hạn'}
                                                         </Box>
                                                     </TableCell>
                                                 ) : p.id === 'action' ? (
@@ -298,9 +281,9 @@ export default function AdminOrderTable() {
                                                         <Grid sx={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
                                                             <EditIcon 
                                                                 color='primary'
-                                                                onClick={() => dispatch(openOrderModal(row.id))}
+                                                                onClick={() => dispatch(openOrderModal(row.code))}
                                                             />
-                                                            <DeleteIcon color='error'/>
+                                                            {/* <DeleteIcon color='error'/> */}
                                                         </Grid>
                                                     </TableCell>
                                                 ) : (

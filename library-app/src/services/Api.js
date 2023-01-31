@@ -33,6 +33,7 @@ instance.interceptors.response.use(
       if (err.response.status === 401 && !originalConfig._retry) {
         originalConfig._retry = true;
         localStorage.clear();
+        window.location = '/login';
         return instance(originalConfig);
       }
     }
