@@ -3,7 +3,7 @@ import { makeStyles } from "@mui/styles";
 import { Link } from "react-router-dom";
 
 export default function BookCard(props) {
-    const { id, name, type, image, description } = props.book;
+    const { id, title, image, description } = props.book;
     const classes = useStyles();
     return (
         <Card>
@@ -11,14 +11,15 @@ export default function BookCard(props) {
                 <CardMedia
                     component={"img"}
                     image={image}
+                    alt="Book image"
                     height="140"
                 />
                 <CardContent>
                     <Typography gutterBottom variant="h6" component="div">
-                        {name}
+                        {title}
                     </Typography>
                     <Typography variant="body2" color="text.secondary">
-                        {/* {description} */}
+                        {description}
                     </Typography>
                 </CardContent>
             </CardActionArea>

@@ -1,11 +1,13 @@
-import { Box, Card, Checkbox, Container, FormControl, FormControlLabel, FormGroup, Grid, Pagination, PaginationItem, TextField, Typography } from "@mui/material";
+import { Box, Card, Checkbox, Container, FormControl, FormControlLabel, FormGroup, Grid, Pagination, PaginationItem, Radio, TextField, Typography } from "@mui/material";
 import MainLayout from "../../components/layout/MainLayout";
 import { makeStyles } from '@mui/styles';
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import BookCard from "../../components/home/BookCard";
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import BookDetailCard from "../../components/home/BookDetailCard";
+import { apiGetAllBook } from "../../services/Book";
+import { apiGetAllCategory } from "../../services/Category";
 
 const listFilter = [
   {
@@ -26,77 +28,50 @@ const listFilter = [
   }
 ]
 
-const books = [
-  {
-    id: 1,
-    name: "Book 1",
-    type: 1,
-    image: "https://lzd-img-global.slatic.net/g/p/7c0c5545a2cab812ef846ff85f919d36.jpg_720x720q80.jpg_.webp",
-    description: "Lizards are a widespread group of squamate reptiles."
-  },
-  {
-    id: 2,
-    name: "Book 2",
-    type: 1,
-    image: "https://lzd-img-global.slatic.net/g/p/7c0c5545a2cab812ef846ff85f919d36.jpg_720x720q80.jpg_.webp",
-    description: "Lizards are a widespread group of squamate reptiles.Lizards are a widespread group of squamate reptiles.Lizards are a widespread group of squamate reptiles."
-  },
-  {
-    id: 2,
-    name: "Book 2",
-    type: 1,
-    image: "https://lzd-img-global.slatic.net/g/p/7c0c5545a2cab812ef846ff85f919d36.jpg_720x720q80.jpg_.webp",
-    description: "Lizards are a widespread group of squamate reptiles."
-  },
-  {
-    id: 2,
-    name: "Book 2",
-    type: 1,
-    image: "https://lzd-img-global.slatic.net/g/p/7c0c5545a2cab812ef846ff85f919d36.jpg_720x720q80.jpg_.webp",
-    description: "Lizards are a widespread group of squamate reptiles."
-  },
-  {
-    id: 2,
-    name: "Book 2",
-    type: 1,
-    image: "https://lzd-img-global.slatic.net/g/p/7c0c5545a2cab812ef846ff85f919d36.jpg_720x720q80.jpg_.webp",
-    description: "Lizards are a widespread group of squamate reptiles."
-  },
-  {
-    id: 2,
-    name: "Book 2",
-    type: 1,
-    image: "https://lzd-img-global.slatic.net/g/p/7c0c5545a2cab812ef846ff85f919d36.jpg_720x720q80.jpg_.webp",
-    description: "Lizards are a widespread group of squamate reptiles."
-  },
-  {
-    id: 2,
-    name: "Book 2",
-    type: 1,
-    image: "https://lzd-img-global.slatic.net/g/p/7c0c5545a2cab812ef846ff85f919d36.jpg_720x720q80.jpg_.webp",
-    description: "Lizards are a widespread group of squamate reptiles."
-  },
-
-]
-
 export default function Home() {
   const classes = useStyles();
-  const [checked, setChecked] = useState([]);
+  const [checked, setChecked] = useState(null);
+  const [categories, setCategories] = useState([]);
   const [nameFilter, setNameFilter] = useState('');
+  const [books, setBooks] = useState([]);
+  const [page, setPage] = useState(1);
+  const size = useMemo(() => {
+    return 8;
+  }, [])
+
+  useEffect(() => {
+    const getCategories = async() => {
+      try {
+        const response = await apiGetAllCategory();
+        if (response.data.status === 200) {
+          setCategories(response.data.data);
+        }
+      } catch(err) {  
+        console.log(err);
+      }
+    }
+
+    getCategories();
+  }, [])
+
+  useEffect(() => {
+    const getBooks = async() => {
+      try {
+        const response = await apiGetAllBook(page - 1, size, nameFilter, checked);
+        if (response.data.status === 200) {
+          setBooks(response.data.data);
+        }
+      } catch(err) {
+        console.log(err);
+      }
+    }
+
+    getBooks();
+  }, [checked, nameFilter, size, page])
 
   const handleChangeFilter = (id) => (event) => {
-    if (event.target.checked) {
-      setChecked([...checked, id]);
-    }
-    else {
-      setChecked(checked.filter((e) => e !== id));
-    }
+    setChecked(id);
   }
-  const handleCheckded = (id) => {
-    return checked.findIndex((e) => e === id) !== -1;
-  }
-
-  console.log(checked);
 
   return (
     <MainLayout>
@@ -111,12 +86,12 @@ export default function Home() {
                 <Box sx={{ ml: 2 }}>
                   <FormControl component="fieldset" variant="standard">
                     <FormGroup>
-                      {listFilter.map((p, index) => {
+                      {categories.map((p, index) => {
                         return (
                           <FormControlLabel
                             key={p.id}
                             control={
-                              <Checkbox checked={handleCheckded(p.id)} onChange={handleChangeFilter(p.id)} />
+                              <Radio checked={p.code === checked} onChange={handleChangeFilter(p.code)} />
                             }
                             label={p.name}
                           />
@@ -143,7 +118,7 @@ export default function Home() {
                 </Box>
               </Box>
               <Grid container spacing={2} sx={{ mb: 2 }}>
-                {books.map((p, index) => {
+                {books?.map((p, index) => {
                   return (
                     <Grid item xs={3} key={index}>
                       <BookCard book={p} />
@@ -155,6 +130,8 @@ export default function Home() {
                 <Pagination
                   className=""
                   count={10}
+                  page={page}
+                  onChange={(event, value) => setPage(value)}
                   renderItem={(item) => (
                     <PaginationItem
                       slots={{ previous: ArrowBackIcon, next: ArrowForwardIcon }}
@@ -165,9 +142,9 @@ export default function Home() {
               </Box>
             </Card>
           </Grid>
-          <Grid item xs={2}>
+          {/* <Grid item xs={2}>
             <BookDetailCard book={books[0]}/>
-          </Grid>
+          </Grid> */}
         </Grid>
       </Container>
     </MainLayout>

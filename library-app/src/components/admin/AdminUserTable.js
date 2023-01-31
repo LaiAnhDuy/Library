@@ -11,7 +11,7 @@ import TableRow from '@mui/material/TableRow';
 import TableSortLabel from '@mui/material/TableSortLabel';
 import Paper from '@mui/material/Paper';
 import { visuallyHidden } from '@mui/utils';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { Grid, InputAdornment, SvgIcon, TextField, useMediaQuery, useTheme } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
 import EditIcon from '@mui/icons-material/Edit';
@@ -19,6 +19,10 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import LockIcon from '@mui/icons-material/Lock';
 import LockOpenIcon from '@mui/icons-material/LockOpen';
 import { Link } from 'react-router-dom';
+import { apiGetAllUser, apiUpdateUser } from '../../services/User';
+import { openAlertModal } from '../../redux/alertSlice';
+import { closeLoadingModal, openLoadingModal } from '../../redux/loadingSlice';
+import { reloadUser } from '../../redux/reloadSlice';
 
 function descendingComparator(a, b, orderBy) {
     if (b[orderBy] < a[orderBy]) {
@@ -50,22 +54,17 @@ function stableSort(array, comparator) {
 
 const headCells = [
     {
-        id: 'name',
+        id: 'fullname',
         disablePadding: false,
-        label: 'Tên sách',
+        label: 'Họ và tên',
     },
     {
-        id: 'code_card',
+        id: 'email',
         disablePadding: false,
-        label: 'Số thẻ',
+        label: 'Email',
     },
     {
-        id: 'dateOfBirth',
-        disablePadding: false,
-        label: 'Ngày sinh',
-    },
-    {
-        id: 'status',
+        id: 'deleted',
         disablePadding: false,
         label: 'Trạng thái'
     },
@@ -75,51 +74,6 @@ const headCells = [
         label: '',
     },
 ];
-
-const listUser = [
-    {
-        id: 1,
-        name: "User 1",
-        status: 1,
-        dateOfBirth: "20/10/2001",
-        code_card: "123456789"
-    },
-    {
-        id: 2,
-        name: "User 2",
-        status: 2,
-        dateOfBirth: "20/10/2001",
-        code_card: "123456789"
-    },
-    {
-        id: 3,
-        name: "User 3",
-        status: 1,
-        dateOfBirth: "20/10/2001",
-        code_card: "123456789"
-    },
-    {
-        id: 4,
-        name: "User 4",
-        status: 2,
-        dateOfBirth: "20/10/2001",
-        code_card: "123456789"
-    },
-    {
-        id: 5,
-        name: "User 5",
-        status: 1,
-        dateOfBirth: "20/10/2001",
-        code_card: "123456789"
-    },
-    {
-        id: 6,
-        name: "User 6",
-        status: 1,
-        dateOfBirth: "20/10/2001",
-        code_card: "123456789"
-    },
-]
 
 function BasicTable(props) {
     const { order, orderBy, onRequestSort } =
@@ -173,8 +127,25 @@ export default function AdminUserTable() {
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(5);
     const [count, setCount] = useState(5);
-    const [users, setUsers] = useState(listUser);
-    const [searchBook, setSearchBook] = useState("");
+    const [users, setUsers] = useState([]);
+    const dispatch = useDispatch();
+    const reload = useSelector(state => state.reload.data);
+
+    useEffect(() => {
+        const getUsers = async() => {
+            try {
+                const response = await apiGetAllUser(page, rowsPerPage);
+                if (response.data.status === 200) {
+                    setUsers(response.data.data);
+                    setCount(response.data.data.length);
+                }
+            } catch(err) {
+                console.log(err);
+            }
+        }
+
+        getUsers();
+    }, [reload.user, page, rowsPerPage]);
 
     const handleRequestSort = (event, property) => {
         const isAsc = orderBy === property && order === 'asc';
@@ -191,8 +162,37 @@ export default function AdminUserTable() {
         setPage(0);
     };
 
-    const handleChangeSearchCustomer = (event) => {
-        setSearchBook(event.target.value);
+    const handleUpdateUser = async(index) => {
+        let dataAlert = {
+            isOpen: false,
+            severity: 'success',
+            message: '',
+        }
+        const messageSuccess = users[index].deleted === false ? "Khóa tài khoản thành công" : "Mở khóa tài khoản thành công"
+        const messageError = users[index].deleted === false ? "Khóa tài khoản thất bại" : "Mở khóa tài khoản thất bại"
+        try {
+            let user = {
+                ...users[index],
+                deleted: !users[index].deleted
+            }
+            
+            dispatch(openLoadingModal());
+            const response = await apiUpdateUser(user);
+            dispatch(closeLoadingModal());
+            if (response.status === 200) {
+                dataAlert = { ...dataAlert, severity: 'success', isOpen: true, message: messageSuccess };
+                dispatch(openAlertModal(dataAlert));
+                dispatch(reloadUser());
+            } else {
+                dataAlert = { ...dataAlert, severity: 'error', isOpen: true, message: messageError };
+                dispatch(openAlertModal(dataAlert));
+            }
+        } catch(err) {
+            console.log(err);
+            dispatch(closeLoadingModal());
+            dataAlert = { ...dataAlert, severity: 'error', isOpen: true, message: messageError };
+            dispatch(openAlertModal(dataAlert));
+        }
     }
 
     const emptyRows =
@@ -200,38 +200,6 @@ export default function AdminUserTable() {
 
     return (
         <Box sx={{ width: '100%' }}>
-            <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
-                <Box sx={{ width: 400 }}>
-                    <TextField
-                        fullWidth
-                        value={searchBook}
-                        onChange={handleChangeSearchCustomer}
-                        InputProps={{
-                            startAdornment: (
-                                <InputAdornment position="start">
-                                    <SvgIcon
-                                        color="action"
-                                        fontSize="small"
-                                    >
-                                        <SearchIcon />
-                                    </SvgIcon>
-                                </InputAdornment>
-                            )
-                        }}
-                        size="small"
-                        placeholder="Search book"
-                        variant="outlined"
-                        sx={{
-                            '& .MuiInputBase-input': {
-                                bgcolor: theme.palette.background.default
-                            },
-                            '& .MuiOutlinedInput-root': {
-                                bgcolor: theme.palette.background.default
-                            }
-                        }}
-                    />
-                </Box>
-            </Box>
             <Paper sx={{ width: '100%', mb: 2 }}>
                 <TableContainer>
                     <Table
@@ -246,8 +214,8 @@ export default function AdminUserTable() {
                         />
                         <TableBody>
                             {stableSort(users, getComparator(order, orderBy))
-                                ?.map((row, index) => {
-                                    const labelId = `enhanced-table-checkbox-${index}`;
+                                ?.map((row, ii) => {
+                                    const labelId = `enhanced-table-checkbox-${ii}`;
                                     return (
                                         <TableRow
                                             hover
@@ -256,7 +224,7 @@ export default function AdminUserTable() {
                                         >
                                             <TableCell ></TableCell>
                                             {headCells.map((p, index) => {
-                                                return p.id === 'status' ? (
+                                                return p.id === 'deleted' ? (
                                                     <TableCell
                                                         key={index}
                                                         sx={{ minWidth: '12em' }}
@@ -264,7 +232,7 @@ export default function AdminUserTable() {
                                                         <Box 
                                                             variant="contained"
                                                             sx={{ 
-                                                                backgroundColor: row[p.id] === 1 ? '#28a745' : '#dc3545',
+                                                                backgroundColor: row[p.id] === false ? '#28a745' : '#dc3545',
                                                                 cursor: 'default',
                                                                 width: '30%',
                                                                 color: '#fff',
@@ -273,16 +241,16 @@ export default function AdminUserTable() {
                                                                 padding: '2px'
                                                             }}
                                                         >
-                                                            {row[p.id] === 1 ? 'Active' : 'Blocked'}
+                                                            {row[p.id] === false ? 'Active' : 'Blocked'}
                                                         </Box>
                                                     </TableCell>
                                                 ) : p.id === 'action' ? (
                                                     <TableCell key={index}>
                                                         <Grid sx={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
-                                                            <EditIcon color='info'/>
-                                                            {row.status === 1 ? 
-                                                                <LockIcon color='error'/> :
-                                                                <LockOpenIcon color='success'/>
+                                                            {/* <EditIcon color='info'/> */}
+                                                            {row.deleted === false ? 
+                                                                <LockIcon color='error' onClick={() => handleUpdateUser(ii)}/> :
+                                                                <LockOpenIcon color='success' onClick={() => handleUpdateUser(ii)}/>
                                                             }
                                                         </Grid>
                                                     </TableCell>
