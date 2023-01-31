@@ -48,7 +48,7 @@ public class UserController extends BaseController<UserService> {
     @DeleteMapping("/{userCode}")
     public ServerResponse deleteUser(@PathVariable("userCode") String userCode) {
         try {
-            service.deleteUser(userCode);
+            service.toggleDeleted(userCode);
             return ServerResponse.success("Xóa người dùng thành công!");
         } catch (Exception exception) {
             log.trace("Lỗi delete user api!");

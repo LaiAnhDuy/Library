@@ -39,8 +39,10 @@ public class UserService extends BaseService<UserRepository, UserEntity> {
         update(entityToUpdate);
     }
 
-    public void deleteUser(String userCode) {
-        delete(userCode);
+    public void toggleDeleted(String userCode) {
+        UserEntity userToToggle = findByCode(userCode);
+        userToToggle.setDeleted(!userToToggle.isDeleted());
+        update(userToToggle);
     }
 
     public List<UserDTO> getListUser(Pageable pageable) {
