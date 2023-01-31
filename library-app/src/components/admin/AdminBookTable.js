@@ -16,12 +16,17 @@ import IconButton from '@mui/material/IconButton';
 import Tooltip from '@mui/material/Tooltip';
 import FilterListIcon from '@mui/icons-material/FilterList';
 import { visuallyHidden } from '@mui/utils';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { Card, CardContent, Grid, InputAdornment, SvgIcon, TextField, useMediaQuery, useTheme } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { Link } from 'react-router-dom';
+import { apiDeleteBook, apiGetAllBook } from '../../services/Book';
+import { openBookModal } from '../../redux/bookSlice';
+import { closeLoadingModal, openLoadingModal } from '../../redux/loadingSlice';
+import { reloadBook } from '../../redux/reloadSlice';
+import { openAlertModal } from '../../redux/alertSlice';
 
 function descendingComparator(a, b, orderBy) {
     if (b[orderBy] < a[orderBy]) {
@@ -53,12 +58,12 @@ function stableSort(array, comparator) {
 
 const headCells = [
     {
-        id: 'name',
-        disablePadding: true,
+        id: 'title',
+        disablePadding: false,
         label: 'Tên sách',
     },
     {
-        id: 'type',
+        id: 'categoryId',
         disablePadding: false,
         label: 'Thể loại',
     },
@@ -78,66 +83,6 @@ const headCells = [
         label: '',
     },
 ];
-
-const listBook = [
-    {
-        id: 1,
-        name: "Book 1",
-        type: 1,
-        image: "https://lzd-img-global.slatic.net/g/p/7c0c5545a2cab812ef846ff85f919d36.jpg_720x720q80.jpg_.webp",
-        description: "Lizards are a widespread group of squamate reptiles.",
-        author: "Nguyễn Đình Trí"
-    },
-    {
-        id: 7,
-        name: "Book 2",
-        type: 1,
-        image: "https://lzd-img-global.slatic.net/g/p/7c0c5545a2cab812ef846ff85f919d36.jpg_720x720q80.jpg_.webp",
-        description: "Lizards are a widespread group of squamate reptiles.",
-        author: "Nguyễn Đình Trí"
-    },
-    {
-        id: 2,
-        name: "Book 2",
-        type: 1,
-        image: "https://lzd-img-global.slatic.net/g/p/7c0c5545a2cab812ef846ff85f919d36.jpg_720x720q80.jpg_.webp",
-        description: "Lizards are a widespread group of squamate reptiles.",
-        author: "Nguyễn Đình Trí"
-    },
-    {
-        id: 3,
-        name: "Book 2",
-        type: 1,
-        image: "https://lzd-img-global.slatic.net/g/p/7c0c5545a2cab812ef846ff85f919d36.jpg_720x720q80.jpg_.webp",
-        description: "Lizards are a widespread group of squamate reptiles.",
-        author: "Nguyễn Đình Trí"
-    },
-    {
-        id: 4,
-        name: "Book 2",
-        type: 1,
-        image: "https://lzd-img-global.slatic.net/g/p/7c0c5545a2cab812ef846ff85f919d36.jpg_720x720q80.jpg_.webp",
-        description: "Lizards are a widespread group of squamate reptiles.",
-        author: "Nguyễn Đình Trí"
-    },
-    {
-        id: 5,
-        name: "Book 2",
-        type: 1,
-        image: "https://lzd-img-global.slatic.net/g/p/7c0c5545a2cab812ef846ff85f919d36.jpg_720x720q80.jpg_.webp",
-        description: "Lizards are a widespread group of squamate reptiles.",
-        author: "Nguyễn Đình Trí"
-    },
-    {
-        id: 6,
-        name: "Book 2",
-        type: 1,
-        image: "https://lzd-img-global.slatic.net/g/p/7c0c5545a2cab812ef846ff85f919d36.jpg_720x720q80.jpg_.webp",
-        description: "Lizards are a widespread group of squamate reptiles.",
-        author: "Nguyễn Đình Trí"
-    },
-
-]
 
 function BasicTable(props) {
     const { order, orderBy, onRequestSort } =
@@ -183,7 +128,7 @@ BasicTable.propTypes = {
     rowCount: PropTypes.number.isRequired,
 };
 
-export default function AdminBookTable() {
+export default function AdminBookTable(props) {
     const theme = useTheme();
     const matchDownSM = useMediaQuery(theme.breakpoints.down('sm'));
     const [order, setOrder] = useState('asc');
@@ -191,8 +136,26 @@ export default function AdminBookTable() {
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(5);
     const [count, setCount] = useState(5);
-    const [books, setBooks] = useState(listBook);
+    const [books, setBooks] = useState([]);
     const [searchBook, setSearchBook] = useState("");
+    const dispatch = useDispatch();
+    const reload = useSelector(state => state.reload.data);
+
+
+    useEffect(() => {
+        const getBooks = async() => {
+            try {
+                const response = await apiGetAllBook(page, rowsPerPage, searchBook, null);
+                if (response.data.status === 200) {
+                    setBooks(response.data.data);
+                }
+            } catch(err) {
+                console.log(err);
+            } 
+        }
+
+        getBooks();
+    }, [page, rowsPerPage, searchBook, props.load, reload.book])
 
     const handleRequestSort = (event, property) => {
         const isAsc = orderBy === property && order === 'asc';
@@ -209,7 +172,31 @@ export default function AdminBookTable() {
         setPage(0);
     };
 
-    const handleChangeSearchCustomer = (event) => {
+    const handleDeleteBook = async(index) => {
+        let dataAlert = {
+            isOpen: false,
+            severity: 'success',
+            message: ''
+        }
+        try {
+            dispatch(openLoadingModal())
+            const response = await apiDeleteBook(books[index].code);
+            dispatch(closeLoadingModal());
+            if (response.data.status === 200) {
+                dataAlert = { ...dataAlert, severity: 'success', isOpen: true, message: response.data.data };
+                dispatch(reloadBook());
+            }
+            else dataAlert = { ...dataAlert, severity: 'error', isOpen: true, message: response.data.data };
+            dispatch(openAlertModal(dataAlert));
+        } catch(err) {
+            console.log(err);
+            dataAlert = { ...dataAlert, severity: 'error', isOpen: true, message: "Cập nhật thất bại" };
+            dispatch(closeLoadingModal());
+            dispatch(openAlertModal(dataAlert));
+        }
+    }
+
+    const handleChangeSearchBook = (event) => {
         setSearchBook(event.target.value);
     }
 
@@ -223,7 +210,7 @@ export default function AdminBookTable() {
                     <TextField
                         fullWidth
                         value={searchBook}
-                        onChange={handleChangeSearchCustomer}
+                        onChange={handleChangeSearchBook}
                         InputProps={{
                             startAdornment: (
                                 <InputAdornment position="start">
@@ -250,19 +237,6 @@ export default function AdminBookTable() {
                     />
                 </Box>
             </Box>
-            {/* <Toolbar sx={{ backgroundColor: theme.palette.background.default }}>
-                <Typography
-                    sx={{ flex: '1 1 100%' }}
-                    variant="body1"
-                >
-                    Danh sách yêu thích của tôi
-                </Typography>
-                <Tooltip title="Filter list">
-                    <IconButton>
-                        <FilterListIcon />
-                    </IconButton>
-                </Tooltip>
-            </Toolbar> */}
             <Paper sx={{ width: '100%', mb: 2 }}>
                 <TableContainer>
                     <Table
@@ -277,8 +251,8 @@ export default function AdminBookTable() {
                         />
                         <TableBody>
                             {stableSort(books, getComparator(order, orderBy))
-                                ?.map((row, index) => {
-                                    const labelId = `enhanced-table-checkbox-${index}`;
+                                ?.map((row, ii) => {
+                                    const labelId = `enhanced-table-checkbox-${ii}`;
                                     return (
                                         <TableRow
                                             hover
@@ -301,8 +275,16 @@ export default function AdminBookTable() {
                                                 ) : p.id === 'action' ? (
                                                     <TableCell key={index}>
                                                         <Grid sx={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
-                                                            <EditIcon color='primary'/>
-                                                            <DeleteIcon color='error'/>
+                                                            <EditIcon 
+                                                                color='primary'
+                                                                onClick={() => dispatch(openBookModal({
+                                                                    bookId: row.code,
+                                                                }))}
+                                                            />
+                                                            <DeleteIcon 
+                                                                color='error'
+                                                                onClick={() => handleDeleteBook(ii)}
+                                                            />
                                                         </Grid>
                                                     </TableCell>
                                                 ) : (

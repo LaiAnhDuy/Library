@@ -9,6 +9,11 @@ import FormControlLabel from '@mui/material/FormControlLabel';
 import FormControl from '@mui/material/FormControl';
 import FormLabel from '@mui/material/FormLabel';
 import { DesktopDatePicker } from '@mui/x-date-pickers/DesktopDatePicker';
+import { apiSignUp } from "../../services/Authentication";
+import { closeLoadingModal, openLoadingModal } from "../../redux/loadingSlice";
+import { useNavigate } from "react-router-dom";
+import { openAlertModal } from "../../redux/alertSlice";
+import { useDispatch } from "react-redux";
 
 
 export default function RegisterForm() {
@@ -16,17 +21,45 @@ export default function RegisterForm() {
         username: "",
         password: "",
         fullname: "",
-        phoneNumber: "",
-        gender: null,
-        dateOfBirth: null,
-        address: "",
+        email: "",
+        // gender: null,
+        // dateOfBirth: null,
+        // address: "",
     })
+
+    const navigate = useNavigate();
+    const dispatch = useDispatch();
 
     const handleChangeReader = (property, value) => {
         setReader({ ...reader, [property]: value })
     }
 
-    console.log(reader);
+    const handleRegister = async() => {
+        let dataAlert = {
+            isOpen: false,
+            severity: 'success',
+            message: '',
+        }
+        try {
+            dispatch(openLoadingModal());
+            const response = await apiSignUp({ ...reader, roleId: 2 });
+            dispatch(closeLoadingModal());
+            if (response.status === 200) {
+                dataAlert = { ...dataAlert, severity: 'success', isOpen: true, message: response.data.message };
+                navigate('/login');
+                dispatch(openAlertModal(dataAlert));
+            } else {
+                dataAlert = { ...dataAlert, severity: 'error', isOpen: true, message: response.data.message };
+                dispatch(openAlertModal(dataAlert));
+            }
+        } catch(err) {
+            console.log(err);
+            dispatch(closeLoadingModal());
+            dataAlert = { ...dataAlert, severity: 'error', isOpen: true, message: "Đăng kí thất bại" };
+            dispatch(openAlertModal(dataAlert));
+        }
+    }
+
     return (
         <Grid container spacing={3} sx={{ alignItems: 'center' }}>
             <Grid item xs={6}>
@@ -59,14 +92,14 @@ export default function RegisterForm() {
             </Grid>
             <Grid item xs={12}>
                 <TextField
-                    label="Số điện thoại"
-                    value={reader.phoneNumber}
-                    onChange={(e) => handleChangeReader("phoneNumber", e.target.value)}
+                    label="Email"
+                    value={reader.email}
+                    onChange={(e) => handleChangeReader("email", e.target.value)}
                     fullWidth
                     variant="outlined"
                 />
             </Grid>
-            <Grid item xs={12}>
+            {/* <Grid item xs={12}>
                 <LocalizationProvider dateAdapter={AdapterDateFns}>
                     <DesktopDatePicker
                         label="Ngày sinh"
@@ -99,9 +132,9 @@ export default function RegisterForm() {
                     fullWidth
                     variant="outlined"
                 />
-            </Grid>
+            </Grid> */}
             <Grid item xs={12}>
-                <Button variant="contained" fullWidth>Đăng kí</Button>
+                <Button variant="contained" fullWidth onClick={handleRegister}>Đăng kí</Button>
             </Grid>
         </Grid>
     )

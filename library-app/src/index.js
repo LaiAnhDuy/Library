@@ -8,15 +8,17 @@ import { theme } from './theme/theme';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 import AdminOrderDetail from './components/admin/AdminOrderDetail';
+import AlertModal from './components/modal/AlertModal';
+import LoadingModal from './components/modal/LoadingModal';
+import AdminBookDetail from './components/admin/AdminBookDetail';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
     <Provider store={store}>
-    <ThemeProvider theme={theme}>
-      <App />
-      <AdminOrderDetail />
-    </ThemeProvider>
+      <ThemeProvider theme={theme}>
+        <App />
+      </ThemeProvider>
     </Provider>
   </React.StrictMode>,
 );

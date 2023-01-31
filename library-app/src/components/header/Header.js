@@ -97,11 +97,6 @@ const ListItem = [
         path: '/'
     },
     {
-        name: 'Danh sách yêu thích',
-        icon: BookIcon,
-        path: '/user/books/favorite',
-    },
-    {
         name: 'Danh sách đang thuê',
         path: '/user/books/borrowing'
     },

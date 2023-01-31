@@ -2,80 +2,130 @@ import { Autocomplete, Button, Grid, TextField } from "@mui/material";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import { DesktopDatePicker } from "@mui/x-date-pickers/DesktopDatePicker";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
-import { useState } from "react";
-
-const listType = [
-    {
-        id: 1,
-        name: 'Truyện tranh'
-    },
-    {
-        id: 2,
-        name: 'Tiểu thuyết'
-    },
-    {
-        id: 3,
-        name: 'Khoa học'
-    }
-]
-
-const BookField = [
-    {
-        id: 'name',
-        label: 'Tên sách',
-        type: 'text',
-    },
-    {
-        id: 'type',
-        label: 'Thể loại',
-        type: 'select',
-        listSelect: listType
-    },
-    {
-        id: 'author',
-        label: 'Tác giả',
-        type: 'text'
-    },
-    {
-        id: 'number_pages',
-        label: 'Số trang',
-        type: 'text',
-    },
-    {
-        id: 'publisher',
-        label: 'Nhà xuất bản',
-        type: 'text'
-    },
-    {
-        id: 'purchase_data',
-        label: 'Ngày mua sách',
-        type: 'date'
-    },
-    {
-        id: 'description',
-        label: 'Nội dung',
-        type: 'text'
-    }
-]
+import { useEffect, useMemo, useState } from "react";
+import { useDispatch } from "react-redux";
+import { openAlertModal } from "../../redux/alertSlice";
+import { closeLoadingModal, openLoadingModal } from "../../redux/loadingSlice";
+import { apiCreateBook } from "../../services/Book";
+import { apiGetAllCategory } from "../../services/Category";
 
 const INIT_BOOK = {
-    name: '',
-    type: null,
+    title: '',
+    categoryId: null,
     author: '',
-    number_pages: '',
+    totalPages: '',
     publisher: '',
-    purchase_data: null,
-    description: ''
+    boughtDate: null,
+    description: '',
+    language: '',
+    price: '',
 }
 
 export default function CreateBookForm(props) {
-    const [book, setBook] = useState(INIT_BOOK)
+    const [book, setBook] = useState(INIT_BOOK);
+    const [categories, setCategories] = useState([]);
+    const dispatch = useDispatch();
+
+    useEffect(() => {
+        const getCategories = async() => {
+            try {
+                const response = await apiGetAllCategory();
+                if (response.data.status === 200) {
+                    setCategories(response.data.data);
+                }
+            } catch(err) {
+                console.log(err);
+            }
+        }
+        
+        getCategories();
+    }, [])
+
+    const BookField = useMemo(() => {
+        return [
+            {
+                id: 'title',
+                label: 'Tên sách',
+                type: 'text',
+            },
+            {
+                id: 'categoryId',
+                label: 'Thể loại',
+                type: 'select',
+                listSelect: categories
+            },
+            {
+                id: 'author',
+                label: 'Tác giả',
+                type: 'text'
+            },
+            {
+                id: 'totalPages',
+                label: 'Số trang',
+                type: 'text',
+            },
+            {
+                id: 'publisher',
+                label: 'Nhà xuất bản',
+                type: 'text'
+            },
+            {
+                id: 'boughtDate',
+                label: 'Ngày mua sách',
+                type: 'date'
+            },
+            {
+                id: 'description',
+                label: 'Nội dung',
+                type: 'text'
+            },
+            {
+                id: 'language',
+                label: 'Ngôn ngữ',
+                type: 'text'
+            },
+            {
+                id: 'price',
+                label: 'Giá',
+                type: 'text',
+            }
+        ]
+    }, [categories])
 
     const handleChangeBook = (property) => (event) => {
         setBook({ ...book, [property]: event.target.value });
     }
 
-    console.log(book);
+    const handleCreateBook = async() => {
+        let dataAlert = {
+            isOpen: false,
+            severity: 'success',
+            message: ''
+        }
+        try {
+            let data = {
+                ...book,
+                price: parseInt(book.price),
+                totalPages: parseInt(book.totalPages),
+                categoryId: book.categoryId.id
+            }
+            dispatch(openLoadingModal())
+            const response = await apiCreateBook(data);
+            dispatch(closeLoadingModal());
+            if (response.data.status === 200) {
+                dataAlert = { ...dataAlert, severity: 'success', isOpen: true, message: response.data.message };
+                setBook(INIT_BOOK);
+                props.onLoad();
+            }
+            else dataAlert = { ...dataAlert, severity: 'error', isOpen: true, message: response.data.message };
+            dispatch(openAlertModal(dataAlert));
+        } catch(err) {
+            console.log(err);
+            dataAlert = { ...dataAlert, severity: 'error', isOpen: true, message: "Thêm sách thất bại" };
+            dispatch(closeLoadingModal());
+            dispatch(openAlertModal(dataAlert));
+        }
+    }
 
     return (
         <Grid container spacing={2}>
@@ -124,7 +174,7 @@ export default function CreateBookForm(props) {
                 )
             })}
             <Grid item xs={12} sx={{ display: 'flex', justifyContent: 'center' }}>
-                <Button variant="contained">Thêm mới</Button>
+                <Button variant="contained" onClick={handleCreateBook}>Thêm mới</Button>
             </Grid>
         </Grid>
     )
