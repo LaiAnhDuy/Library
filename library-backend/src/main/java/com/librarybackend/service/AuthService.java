@@ -29,7 +29,8 @@ public class AuthService {
         Authentication authentication = authenticationManager.authenticate(authenticationObject);
         LibraryUserDetails userDetails = (LibraryUserDetails) authentication.getPrincipal();
         String token = jwtUtil.generateToken(userDetails);
-        return new JwtResponse(userDetails.getUserEntity().getCode(), userDetails.getUsername(), "user", token);
+        String role = userDetails.getUserEntity().getRoleId() == 1 ? "admin" : "user";
+        return new JwtResponse(userDetails.getUserEntity().getCode(), userDetails.getUsername(), role, token);
     }
 
     public UserDTO signUp(UserDTO userDTO) {

@@ -19,4 +19,6 @@ public abstract class BaseDTO {
     protected LocalDateTime modifiedDate;
     protected Long modifiedBy;
     protected boolean deleted;
+    protected long totalItems;
+    protected int totalPages;
 }

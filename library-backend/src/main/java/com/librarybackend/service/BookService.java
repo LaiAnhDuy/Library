@@ -62,6 +62,11 @@ public class BookService extends BaseService<BookRepository, BookEntity> {
         List<BookEntity> bookEntities = bookPage.getContent();
         return bookEntities.stream()
                 .map(BookDTO::new)
+                .map(bookDTO -> {
+                    bookDTO.setTotalItems(bookPage.getTotalElements());
+                    bookDTO.setTotalPages(bookPage.getTotalPages());
+                    return bookDTO;
+                })
                 .collect(Collectors.toList());
     }
 
