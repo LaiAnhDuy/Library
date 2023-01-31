@@ -97,13 +97,9 @@ const ListItem = [
         path: '/'
     },
     {
-        name: 'Danh sách đang thuê',
+        name: 'Danh sách mượn',
         path: '/user/books/borrowing'
     },
-    {
-        name: 'Danh sách đã thuê',
-        path: '/user/books/borrowed'
-    }
 ]
 
 export default function Header() {

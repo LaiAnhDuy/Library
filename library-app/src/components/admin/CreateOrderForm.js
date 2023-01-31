@@ -2,61 +2,109 @@ import { Autocomplete, Button, Grid, TextField } from "@mui/material";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import { DesktopDatePicker } from "@mui/x-date-pickers/DesktopDatePicker";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { useDispatch } from "react-redux";
 import { books, users } from "../../constant/fakeData";
-
-const orderField = [
-    {
-        id: 'user',
-        label: 'Đọc giả',
-        type: 'select',
-        listSelect: users
-    },
-    {
-        id: 'book',
-        label: 'Sách mượn',
-        type: 'select',
-        listSelect: books
-    },
-    {
-        id: 'deposit',
-        label: 'Tiền cọc',
-        type: 'text'
-    },
-    {
-        id: 'dateOfHire',
-        label: 'Ngày thuê',
-        type: 'date'
-    },
-    {
-        id: 'dateOfPay',
-        label: 'Ngày trả',
-        type: 'date',
-    },
-    {
-        id: 'description',
-        label: 'Ghi chú',
-        type: 'text'
-    }
-]
+import { openAlertModal } from "../../redux/alertSlice";
+import { closeLoadingModal, openLoadingModal } from "../../redux/loadingSlice";
+import { reloadOrder } from "../../redux/reloadSlice";
+import { apiGetAllBook } from "../../services/Book";
+import { apiCreateOrder } from "../../services/Order";
+import { apiGetAllUser } from "../../services/User";
 
 const INIT_ORDER = {
     user: null,
     book: null,
-    deposit: 0,
-    dateOfHire: null,
-    dateOfPay: null,
-    description: '',
+    price: 0,
 }
 
 export default function CreateOrderForm(props) {
-    const [order, setOrder] = useState(INIT_ORDER)
+    const [users, setUsers] = useState([]);
+    const [books, setBooks] = useState([]);
+    const [order, setOrder] = useState(INIT_ORDER);
+    const dispatch = useDispatch();
+
+    useEffect(() => {
+        const getUsers = async () => {
+            try {
+                const response = await apiGetAllUser(0, 1000);
+                if (response.data.status === 200) {
+                    setUsers(response.data.data);
+                }
+            } catch (err) {
+                console.log(err);
+            }
+        }
+
+        const getBooks = async () => {
+            try {
+                const response = await apiGetAllBook(0, 1000, '', null);
+                if (response.data.status === 200) {
+                    setBooks(response.data.data);
+                }
+            } catch (err) {
+                console.log(err);
+            }
+        }
+        getUsers();
+        getBooks();
+    }, [])
+
+    const orderField = useMemo(() => {
+        return [
+            {
+                id: 'user',
+                label: 'Đọc giả',
+                type: 'select',
+                listSelect: users
+            },
+            {
+                id: 'book',
+                label: 'Sách mượn',
+                type: 'select',
+                listSelect: books
+            },
+            {
+                id: 'price',
+                label: 'Tiền cọc',
+                type: 'text'
+            },
+        ]
+    }, [users, books])
 
     const handleChangeOrder = (property) => (event) => {
         setOrder({ ...order, [property]: event.target.value });
     }
 
-    console.log(order);
+    const handleCreateOrder = async() => {
+        let dataAlert = {
+            isOpen: false,
+            severity: 'success',
+            message: ''
+        }
+        try {
+            dispatch(openLoadingModal());
+            let orderData = {
+                userId: order.user.id,
+                bookId: order.book.id,
+                price: parseInt(order.price)
+            }
+            const response = await apiCreateOrder([orderData]);
+            dispatch(closeLoadingModal());
+            if (response.data.status === 200) {
+                dataAlert = { ...dataAlert, severity: 'success', isOpen: true, message: response.data.message };
+                setOrder(INIT_ORDER);
+                dispatch(reloadOrder());
+            }
+            else dataAlert = { ...dataAlert, severity: 'error', isOpen: true, message: response.data.message };
+            dispatch(openAlertModal(dataAlert));
+        } catch(err) {
+            console.log(err);
+            dataAlert = { ...dataAlert, severity: 'error', isOpen: true, message: "Thêm thể loại thất bại" };
+            dispatch(closeLoadingModal());
+            dispatch(openAlertModal(dataAlert));
+        }
+    }
 
     return (
         <Grid container spacing={2}>
@@ -66,7 +114,7 @@ export default function CreateOrderForm(props) {
                         {p.type === 'select' ? (
                             <Autocomplete
                                 options={p.listSelect}
-                                getOptionLabel={(option) => option.name}
+                                getOptionLabel={(option) => p.id === 'user' ? option.fullname : option.title}
                                 value={order[p.id]}
                                 onChange={(event, newValue) => setOrder({ ...order, [p.id]: newValue })}
                                 renderInput={(params) =>
@@ -83,10 +131,10 @@ export default function CreateOrderForm(props) {
                                     label="Date desktop"
                                     inputFormat="dd/MM/yyyy"
                                     value={order[p.id]}
-                                    onChange={(newValue) => setOrder({...order, [p.id]: newValue})}
-                                    renderInput={(params) => 
-                                        <TextField 
-                                            {...params} 
+                                    onChange={(newValue) => setOrder({ ...order, [p.id]: newValue })}
+                                    renderInput={(params) =>
+                                        <TextField
+                                            {...params}
                                             fullWidth
                                             label={p.label}
                                         />
@@ -105,7 +153,7 @@ export default function CreateOrderForm(props) {
                 )
             })}
             <Grid item xs={12} sx={{ display: 'flex', justifyContent: 'center' }}>
-                <Button variant="contained">Thêm mới</Button>
+                <Button variant="contained" onClick={handleCreateOrder}>Thêm mới</Button>
             </Grid>
         </Grid>
     )

@@ -16,11 +16,15 @@ import IconButton from '@mui/material/IconButton';
 import Tooltip from '@mui/material/Tooltip';
 import FilterListIcon from '@mui/icons-material/FilterList';
 import { visuallyHidden } from '@mui/utils';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { Card, CardContent, Grid, InputAdornment, SvgIcon, TextField, useMediaQuery, useTheme } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
 import EditIcon from '@mui/icons-material/Edit';
+import DeleteIcon from '@mui/icons-material/Delete';
 import { Link } from 'react-router-dom';
+import { openOrderModal } from '../../redux/orderSlice';
+import { formatDate } from '../../utils/format-date';
+import { apiGetAllOrder } from '../../services/User';
 
 function descendingComparator(a, b, orderBy) {
     if (b[orderBy] < a[orderBy]) {
@@ -52,91 +56,37 @@ function stableSort(array, comparator) {
 
 const headCells = [
     {
-        id: 'name',
-        disablePadding: true,
-        label: 'Tên sách',
+        id: 'user',
+        disablePadding: false,
+        label: 'Người mượn',
     },
     {
-        id: 'type',
+        id: 'book',
         disablePadding: false,
-        label: 'Thể loại',
+        label: 'Sách mượn',
     },
     {
-        id: 'author',
+        id: 'price',
         disablePadding: false,
-        label: 'Tác giả',
+        label: 'Tiền cọc',
     },
     {
-        id: 'description',
+        id: 'borrowDate',
         disablePadding: false,
-        label: 'Mô tả'
+        label: 'Ngày Mượn'
     },
     {
-        id: 'action',
+        id: 'returned',
         disablePadding: false,
-        label: '',
+        label: 'Trạng thái'
+    },
+    {
+        id: 'returnedDate',
+        disablePadding: false,
+        label: 'Ngày trả'
     },
 ];
 
-const listBook = [
-    {
-        id: 1,
-        name: "Book 1",
-        type: 1,
-        image: "https://lzd-img-global.slatic.net/g/p/7c0c5545a2cab812ef846ff85f919d36.jpg_720x720q80.jpg_.webp",
-        description: "Lizards are a widespread group of squamate reptiles.",
-        author: "Nguyễn Đình Trí"
-    },
-    {
-        id: 7,
-        name: "Book 2",
-        type: 1,
-        image: "https://lzd-img-global.slatic.net/g/p/7c0c5545a2cab812ef846ff85f919d36.jpg_720x720q80.jpg_.webp",
-        description: "Lizards are a widespread group of squamate reptiles.",
-        author: "Nguyễn Đình Trí"
-    },
-    {
-        id: 2,
-        name: "Book 2",
-        type: 1,
-        image: "https://lzd-img-global.slatic.net/g/p/7c0c5545a2cab812ef846ff85f919d36.jpg_720x720q80.jpg_.webp",
-        description: "Lizards are a widespread group of squamate reptiles.",
-        author: "Nguyễn Đình Trí"
-    },
-    {
-        id: 3,
-        name: "Book 2",
-        type: 1,
-        image: "https://lzd-img-global.slatic.net/g/p/7c0c5545a2cab812ef846ff85f919d36.jpg_720x720q80.jpg_.webp",
-        description: "Lizards are a widespread group of squamate reptiles.",
-        author: "Nguyễn Đình Trí"
-    },
-    {
-        id: 4,
-        name: "Book 2",
-        type: 1,
-        image: "https://lzd-img-global.slatic.net/g/p/7c0c5545a2cab812ef846ff85f919d36.jpg_720x720q80.jpg_.webp",
-        description: "Lizards are a widespread group of squamate reptiles.",
-        author: "Nguyễn Đình Trí"
-    },
-    {
-        id: 5,
-        name: "Book 2",
-        type: 1,
-        image: "https://lzd-img-global.slatic.net/g/p/7c0c5545a2cab812ef846ff85f919d36.jpg_720x720q80.jpg_.webp",
-        description: "Lizards are a widespread group of squamate reptiles.",
-        author: "Nguyễn Đình Trí"
-    },
-    {
-        id: 6,
-        name: "Book 2",
-        type: 1,
-        image: "https://lzd-img-global.slatic.net/g/p/7c0c5545a2cab812ef846ff85f919d36.jpg_720x720q80.jpg_.webp",
-        description: "Lizards are a widespread group of squamate reptiles.",
-        author: "Nguyễn Đình Trí"
-    },
-
-]
 
 function BasicTable(props) {
     const { order, orderBy, onRequestSort } =
@@ -190,8 +140,36 @@ export default function ListBorrowingBookTable() {
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(5);
     const [count, setCount] = useState(5);
-    const [books, setBooks] = useState(listBook);
-    const [searchBook, setSearchBook] = useState("");
+    const [orders, setOrders] = useState([]);
+    const [user, setUser] = useState(null);
+    const reload = useSelector(state => state.reload.data);
+    const dispatch = useDispatch();
+
+    useEffect(() => {
+        const getOrders = async() => {
+            try {
+                const response = await apiGetAllOrder(page, rowsPerPage, user);
+                if (response.data.status === 200) {
+                    let orderDatas = response.data.data.map((p) => {
+                        return {
+                            ...p,
+                            user: p.userId,
+                            book: p.book.title,
+                            borrowDate: p.borrowDate === null ? null : formatDate(p.borrowDate),
+                            dueDate: p.dueDate === null ? null : formatDate(p.dueDate),
+                            returnedDate: p.returnedDate === null ? null : formatDate(p.returnedDate)
+                        }
+                    })
+
+                    setOrders(orderDatas);
+                }
+            } catch(err) {
+                console.log(err);
+            }
+        }
+
+        getOrders();
+    }, [page, rowsPerPage, user, reload.order])
 
     const handleRequestSort = (event, property) => {
         const isAsc = orderBy === property && order === 'asc';
@@ -208,16 +186,12 @@ export default function ListBorrowingBookTable() {
         setPage(0);
     };
 
-    const handleChangeSearchCustomer = (event) => {
-        setSearchBook(event.target.value);
-    }
-
     const emptyRows =
         page > 0 ? Math.max(0, (1 + page) * rowsPerPage - count) : 0;
 
     return (
         <Box sx={{ width: '100%' }}>
-            <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
+            {/* <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
                 <Box sx={{ width: 400 }}>
                     <TextField
                         fullWidth
@@ -248,20 +222,7 @@ export default function ListBorrowingBookTable() {
                         }}
                     />
                 </Box>
-            </Box>
-            <Toolbar sx={{ backgroundColor: theme.palette.background.default }}>
-                <Typography
-                    sx={{ flex: '1 1 100%' }}
-                    variant="body1"
-                >
-                    Danh sách đang mượn
-                </Typography>
-                <Tooltip title="Filter list">
-                    <IconButton>
-                        <FilterListIcon />
-                    </IconButton>
-                </Tooltip>
-            </Toolbar>
+            </Box> */}
             <Paper sx={{ width: '100%', mb: 2 }}>
                 <TableContainer>
                     <Table
@@ -275,7 +236,7 @@ export default function ListBorrowingBookTable() {
                             rowCount={count}
                         />
                         <TableBody>
-                            {stableSort(books, getComparator(order, orderBy))
+                            {stableSort(orders, getComparator(order, orderBy))
                                 ?.map((row, index) => {
                                     const labelId = `enhanced-table-checkbox-${index}`;
                                     return (
@@ -286,20 +247,38 @@ export default function ListBorrowingBookTable() {
                                         >
                                             <TableCell ></TableCell>
                                             {headCells.map((p, index) => {
-                                                return p.id === 'customerName' ? (
+                                                return p.id === 'returned' ? (
                                                     <TableCell
                                                         key={index}
-                                                        component="th"
-                                                        id={labelId}
-                                                        scope="row"
-                                                        padding="none"
+                                                        // component="th"
+                                                        // id={labelId}
+                                                        // scope="row"
+                                                        // padding="none"
                                                         sx={{ minWidth: '12em' }}
                                                     >
-                                                        {row[p.id]}
+                                                        <Box 
+                                                            variant="contained"
+                                                            sx={{ 
+                                                                backgroundColor: row[p.id] === false ? '#6633CC' : row[p.id] === true ? '#33CC00' : '#FF3030',
+                                                                cursor: 'default',
+                                                                width: '50%',
+                                                                color: '#fff',
+                                                                borderRadius: '12px',
+                                                                textAlign: 'center',
+                                                                padding: '2px'
+                                                            }}
+                                                        >
+                                                            {row[p.id] === false ? 'Đang thuê' : row[p.id] === true ? 'Đã trả' : 'Quán hạn'}
+                                                        </Box>
                                                     </TableCell>
                                                 ) : p.id === 'action' ? (
                                                     <TableCell key={index}>
                                                         <Grid sx={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
+                                                            <EditIcon 
+                                                                color='primary'
+                                                                onClick={() => dispatch(openOrderModal(row.code))}
+                                                            />
+                                                            {/* <DeleteIcon color='error'/> */}
                                                         </Grid>
                                                     </TableCell>
                                                 ) : (
