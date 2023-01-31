@@ -1,5 +1,6 @@
 import { path } from '../constant/path';
 import AdminBook from '../pages/admin/AdminBook';
+import AdminCategory from '../pages/admin/AdminCategory';
 import AdminOrder from '../pages/admin/AdminOrder';
 import AdminUser from '../pages/admin/AdminUser';
 import DashBoard from '../pages/admin/DashBoard';
@@ -55,5 +56,9 @@ export const PageRoutes = [
   {
     path: path.ADMIN_ORDER,
     element: AdminOrder
+  },
+  {
+    path: path.ADMIN_CATEGORY,
+    element: AdminCategory
   }
 ];
