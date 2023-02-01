@@ -44,7 +44,7 @@ export default function RegisterForm() {
             dispatch(openLoadingModal());
             const response = await apiSignUp({ ...reader, roleId: 2 });
             dispatch(closeLoadingModal());
-            if (response.status === 200) {
+            if (response.data.status === 200) {
                 dataAlert = { ...dataAlert, severity: 'success', isOpen: true, message: response.data.message };
                 navigate('/login');
                 dispatch(openAlertModal(dataAlert));

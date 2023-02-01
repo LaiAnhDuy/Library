@@ -13,7 +13,7 @@ export const CustomerRoutes = () => {
             <Route 
               key={index} 
               path={p.path} 
-              element={ (!auth && p.path !== '/login') ? <Navigate to={'/login'} /> : <Element />}
+              element={ (!auth && ( p.path !== '/login') && p.path !== '/register') ? <Navigate to={'/login'} /> : <Element />}
             />
           )
         })}
