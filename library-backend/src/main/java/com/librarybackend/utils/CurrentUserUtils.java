@@ -11,7 +11,11 @@ public class CurrentUserUtils {
 
     public static UserEntity getCurrentUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        LibraryUserDetails userDetails = (LibraryUserDetails) authentication.getPrincipal();
-        return userDetails.getUserEntity();
+        try {
+            LibraryUserDetails userDetails = (LibraryUserDetails) authentication.getPrincipal();
+            return userDetails.getUserEntity();
+        } catch (Exception e) {
+            return null;
+        }
     }
 }

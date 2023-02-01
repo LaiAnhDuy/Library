@@ -51,6 +51,7 @@ public class AuthController {
         } catch (DataIntegrityViolationException exception) {
             throw new DuplicateAccountException("Trùng tên đăng nhập!");
         } catch (Exception exception) {
+            exception.printStackTrace();
             throw new UnauthorizeException("Unknow exception!");
         }
     }

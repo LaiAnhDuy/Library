@@ -28,6 +28,7 @@ public class CustomAuditAware implements AuditorAware<Long> {
         }
 
 //        return Optional.of(((UserDetails) authentication.getPrincipal()).getUsername());
+        if(userEntity == null) return null;
         return Optional.of(userEntity.getId());
     }
 }
