@@ -160,13 +160,14 @@ export default function AdminOrderTable() {
                             ...p,
                             user: p.userId,
                             book: p.book.title,
-                            borrowDate: p.borrowDate === null ? null : formatDate(p.borrowDate),
-                            dueDate: p.dueDate === null ? null : formatDate(p.dueDate),
-                            returnedDate: p.returnedDate === null ? null : formatDate(p.returnedDate)
+                            borrowDate: p.borrowDate === null ? '' : formatDate(p.borrowDate),
+                            dueDate: p.dueDate === null ? '' : formatDate(p.dueDate),
+                            returnedDate: p.returnedDate === null ? '' : formatDate(p.returnedDate)
                         }
                     })
 
                     setOrders(orderDatas);
+                    setCount(response.data.data[0].totalItems);
                 }
             } catch(err) {
                 console.log(err);

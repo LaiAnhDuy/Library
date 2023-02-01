@@ -114,7 +114,7 @@ export default function CreateBookForm(props) {
             dispatch(closeLoadingModal());
             if (response.data.status === 200) {
                 dataAlert = { ...dataAlert, severity: 'success', isOpen: true, message: response.data.message };
-                setBook(INIT_BOOK);
+                // setBook(INIT_BOOK);
                 props.onLoad();
             }
             else dataAlert = { ...dataAlert, severity: 'error', isOpen: true, message: response.data.message };

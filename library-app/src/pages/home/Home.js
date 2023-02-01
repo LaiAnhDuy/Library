@@ -120,7 +120,7 @@ export default function Home() {
               <Grid container spacing={2} sx={{ mb: 2 }}>
                 {books?.map((p, index) => {
                   return (
-                    <Grid item xs={3} key={index}>
+                    <Grid item xs={4} key={index}>
                       <BookCard book={p} />
                     </Grid>
                   )

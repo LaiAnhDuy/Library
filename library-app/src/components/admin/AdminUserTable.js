@@ -213,7 +213,7 @@ export default function AdminUserTable() {
                             rowCount={count}
                         />
                         <TableBody>
-                            {stableSort(users, getComparator(order, orderBy))
+                            {users.slice((page) * rowsPerPage, (page + 1) * rowsPerPage)
                                 ?.map((row, ii) => {
                                     const labelId = `enhanced-table-checkbox-${ii}`;
                                     return (

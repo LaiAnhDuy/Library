@@ -148,6 +148,7 @@ export default function AdminBookTable(props) {
                 const response = await apiGetAllBook(page, rowsPerPage, searchBook, null);
                 if (response.data.status === 200) {
                     setBooks(response.data.data);
+                    setCount(response.data.data[0].totalItems);
                 }
             } catch(err) {
                 console.log(err);
