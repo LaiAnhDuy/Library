@@ -24,6 +24,7 @@ public interface BorrowingRepository extends BaseRepository<BorrowingEntity> {
 
     @Query(value = "select * from borrowing " +
             "where due_date < now() " +
+            "and returned = false" +
             "limit 10", nativeQuery = true)
     List<BorrowingEntity> count7Overdued();
 }
