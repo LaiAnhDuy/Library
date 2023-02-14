@@ -23,7 +23,8 @@ export default function RegisterForm() {
         fullname: "",
         email: "",
         // gender: null,
-        // dateOfBirth: null,
+        dateOfBirth: null,
+        phone: ''
         // address: "",
     })
 
@@ -99,7 +100,16 @@ export default function RegisterForm() {
                     variant="outlined"
                 />
             </Grid>
-            {/* <Grid item xs={12}>
+            <Grid item xs={12}>
+                <TextField
+                    label="Số điện thoại"
+                    value={reader.phone}
+                    onChange={(e) => handleChangeReader("phone", e.target.value)}
+                    fullWidth
+                    variant="outlined"
+                />
+            </Grid>
+            <Grid item xs={12}>
                 <LocalizationProvider dateAdapter={AdapterDateFns}>
                     <DesktopDatePicker
                         label="Ngày sinh"
@@ -111,28 +121,6 @@ export default function RegisterForm() {
                     />
                 </LocalizationProvider>
             </Grid>
-            <Grid item xs={12}>
-                <FormControl>
-                    <FormLabel>Giới tính</FormLabel>
-                    <RadioGroup
-                        row
-                        value={reader.gender}
-                        onChange={(e) => handleChangeReader("gender", +e.target.value)}
-                    >
-                        <FormControlLabel value={1} control={<Radio />} label="Nam" />
-                        <FormControlLabel value={2} control={<Radio />} label="Nữ" />
-                    </RadioGroup>
-                </FormControl>
-            </Grid>
-            <Grid item xs={12}>
-                <TextField
-                    label="Địa chỉ"
-                    value={reader.address}
-                    onChange={(e) => handleChangeReader("address", e.target.value)}
-                    fullWidth
-                    variant="outlined"
-                />
-            </Grid> */}
             <Grid item xs={12}>
                 <Button variant="contained" fullWidth onClick={handleRegister}>Đăng kí</Button>
             </Grid>

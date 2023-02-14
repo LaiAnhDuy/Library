@@ -7,6 +7,8 @@ import GroupAddIcon from '@mui/icons-material/GroupAdd';
 import AutoStoriesIcon from '@mui/icons-material/AutoStories';
 import { useEffect, useState } from "react";
 import { apiGetAnalytic } from "../../services/Analytic";
+import ChartDashBoard from "../../components/admin/ChartDashBoard";
+import TableDashBoard from "../../components/admin/TableDashboard";
 
 export default function DashBoard(props) {
 
@@ -15,6 +17,9 @@ export default function DashBoard(props) {
         totalBorrowing: '',
         totalReader: '',
         totalNewUser: '',
+        newBorrowingIn7Days: [0, 0, 0, 0, 0, 0, 0],
+        newUserIn7Days: [0, 0, 0, 0, 0, 0, 0],
+        overduedBorrowing: []
     })
 
     useEffect(() => {
@@ -22,7 +27,11 @@ export default function DashBoard(props) {
             try {
                 const response = await apiGetAnalytic();
                 if (response.data.status === 200) {
-                    setAnalytic(response.data.data);
+                    setAnalytic({
+                        ...response.data.data,
+                        newBorrowingIn7Days: response.data.data.newBorrowingIn7Days.reverse(),
+                        newUserIn7Days: response.data.data.newUserIn7Days.reverse()
+                    });
                 }
             } catch(err) {
                 console.log(err);
@@ -31,6 +40,8 @@ export default function DashBoard(props) {
 
         getAnalytic();
     }, [])
+    
+    console.log(analytic);
 
     const RenderAnalytic = (props) => {
         const { title, total, Icon, color, bgcolor } = props;
@@ -107,6 +118,15 @@ export default function DashBoard(props) {
                         color="#3f7afc"
                         bgcolor="#e1f1ff"
                     />
+                </Grid>
+                <Grid item xs={6}>
+                    <ChartDashBoard 
+                        newBorrowingIn7Days={analytic.newBorrowingIn7Days} 
+                        newUserIn7Days={analytic.newUserIn7Days}
+                    />
+                </Grid>
+                <Grid item xs={6}>
+                    <TableDashBoard orders={analytic.overduedBorrowing}/>
                 </Grid>
             </Grid>
             {/* </CardContent> */}

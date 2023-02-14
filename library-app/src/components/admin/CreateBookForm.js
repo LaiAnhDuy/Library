@@ -19,6 +19,7 @@ const INIT_BOOK = {
     description: '',
     language: '',
     price: '',
+    imgUrl: '',
 }
 
 export default function CreateBookForm(props) {
@@ -88,6 +89,11 @@ export default function CreateBookForm(props) {
                 id: 'price',
                 label: 'Giá',
                 type: 'text',
+            },
+            {
+                id: 'imgUrl',
+                label: 'Link Ảnh',
+                type: 'text'
             }
         ]
     }, [categories])

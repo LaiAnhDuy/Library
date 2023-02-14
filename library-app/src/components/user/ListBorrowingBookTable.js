@@ -87,6 +87,12 @@ const headCells = [
     },
 ];
 
+function compareDate(date) {
+    var d1 = new Date(date);
+    var d2 = new Date();
+    return d1.getTime() > d2.getTime();
+}
+
 
 function BasicTable(props) {
     const { order, orderBy, onRequestSort } =
@@ -160,7 +166,6 @@ export default function ListBorrowingBookTable() {
                             returnedDate: p.returnedDate === null ? null : formatDate(p.returnedDate)
                         }
                     })
-
                     setOrders(orderDatas);
                 }
             } catch(err) {
@@ -259,7 +264,7 @@ export default function ListBorrowingBookTable() {
                                                         <Box 
                                                             variant="contained"
                                                             sx={{ 
-                                                                backgroundColor: row[p.id] === false ? '#6633CC' : row[p.id] === true ? '#33CC00' : '#FF3030',
+                                                                backgroundColor: row[p.id] === true ? '#33CC00' : (compareDate(row.dueDate)) ? '#6633CC' : '#FF3030',
                                                                 cursor: 'default',
                                                                 width: '50%',
                                                                 color: '#fff',
@@ -268,7 +273,7 @@ export default function ListBorrowingBookTable() {
                                                                 padding: '2px'
                                                             }}
                                                         >
-                                                            {row[p.id] === false ? 'Đang thuê' : row[p.id] === true ? 'Đã trả' : 'Quán hạn'}
+                                                            {row[p.id] === true ? 'Đã trả' : (compareDate(row.dueDate)) ? 'Đang thuê' : 'Quá hạn'}
                                                         </Box>
                                                     </TableCell>
                                                 ) : p.id === 'action' ? (
