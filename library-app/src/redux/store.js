@@ -11,6 +11,6 @@ export const store = configureStore({
     alert: alertSlice,
     order: orderSlice,
     book: bookSlice,
-    reload: reloadSlice
+    reload: reloadSlice,
   },
 });
