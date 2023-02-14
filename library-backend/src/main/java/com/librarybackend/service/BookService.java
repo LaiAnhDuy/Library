@@ -56,8 +56,8 @@ public class BookService extends BaseService<BookRepository, BookEntity> {
         String categoryCode = bookFilterSearch.getCategoryCode();
         Long categoryId = categoryService.findIdByCode(categoryCode);
         Specification<BookEntity> bookSpec = Specification.where(hasTitleLike(bookTitle))
-                .and(hasCategoryId(categoryId))
-                .and(deletedFalse());
+                                                            .and(hasCategoryId(categoryId))
+                                                            .and(deletedFalse());
         Page<BookEntity> bookPage = repository.findAll(bookSpec, pageable);
         List<BookEntity> bookEntities = bookPage.getContent();
         return bookEntities.stream()

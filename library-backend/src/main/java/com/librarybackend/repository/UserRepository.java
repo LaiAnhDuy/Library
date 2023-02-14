@@ -2,6 +2,7 @@ package com.librarybackend.repository;
 
 import com.librarybackend.entity.UserEntity;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 @Repository
@@ -9,10 +10,10 @@ public interface UserRepository extends BaseRepository<UserEntity> {
     UserEntity findByUsername(String username);
     int countDistinctByDeletedFalse();
     @Query(value = "select count(*) from user " +
-            "where created_date > now() - interval 7 day " +
+            "where created_date > now() - interval :n day " +
             "and deleted = false " +
             "and role_id = 2", nativeQuery = true)
-    int countNewUserOverTheLast7Days();
+    int countNewUserOverTheLastNDays(@Param("n") int day);
 
     UserEntity findByCode(String userCode);
 }
