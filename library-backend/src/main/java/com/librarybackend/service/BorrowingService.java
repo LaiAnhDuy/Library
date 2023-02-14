@@ -35,6 +35,7 @@ public class BorrowingService extends BaseService<BorrowingRepository, Borrowing
                                                     .map(BorrowingEntity::new)
                                                     .map(borrowingEntity -> {
                                                         borrowingEntity.setBorrowDate(LocalDateTime.now());
+                                                        borrowingEntity.setDueDate(LocalDateTime.now().plusDays(7));
                                                         return borrowingEntity;
                                                     })
                                                     .collect(Collectors.toList());

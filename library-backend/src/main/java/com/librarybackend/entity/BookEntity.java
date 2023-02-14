@@ -44,6 +44,9 @@ public class BookEntity extends BaseEntity{
     @Column(name = "bought_date")
     private LocalDateTime boughtDate;
 
+    @Column(name = "img_url")
+    private String imgUrl;
+
     public BookEntity(BookDTO bookDTO) {
         this.categoryId = bookDTO.getCategoryId();
         this.title = bookDTO.getTitle();
@@ -54,6 +57,7 @@ public class BookEntity extends BaseEntity{
         this.language = bookDTO.getLanguage();
         this.price = bookDTO.getPrice();
         this.boughtDate = bookDTO.getBoughtDate();
+        this.imgUrl = bookDTO.getImgUrl();
 
         this.id = bookDTO.getId();
         this.code = bookDTO.getCode();
