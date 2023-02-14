@@ -6,6 +6,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDate;
+
 @Getter
 @Setter
 @NoArgsConstructor
@@ -15,6 +17,8 @@ public class UserDTO extends BaseDTO{
     private String password;
     private String fullname;
     private String email;
+    private String phone;
+    private LocalDate dateOfBirth;
     private Long roleId = 2l;
 
     public UserDTO(UserEntity userEntity) {
@@ -22,6 +26,8 @@ public class UserDTO extends BaseDTO{
 //        this.username = userEntity.getUsername();
         this.password = "";
         this.email = userEntity.getEmail();
+        this.phone = userEntity.getPhone();
+        this.dateOfBirth = userEntity.getDateOfBirth();
         this.roleId = userEntity.getRoleId();
         this.id = userEntity.getId();
         this.code = userEntity.getCode();

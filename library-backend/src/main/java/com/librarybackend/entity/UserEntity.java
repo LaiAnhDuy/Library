@@ -45,6 +45,8 @@ public class UserEntity extends BaseEntity{
         this.password = userDTO.getPassword();
         this.email = userDTO.getEmail();
         this.fullname = userDTO.getFullname();
+        this.phone = userDTO.getPhone();
+        this.dateOfBirth = userDTO.getDateOfBirth();
         this.roleId = userDTO.getRoleId();
         this.id = userDTO.getId();
         this.createdDate = userDTO.getCreatedDate();
