@@ -5,28 +5,8 @@ import { useEffect, useMemo, useState } from "react";
 import BookCard from "../../components/home/BookCard";
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
-import BookDetailCard from "../../components/home/BookDetailCard";
 import { apiGetAllBook } from "../../services/Book";
 import { apiGetAllCategory } from "../../services/Category";
-
-const listFilter = [
-  {
-    id: 1,
-    name: "Khoa học"
-  },
-  {
-    id: 2,
-    name: "Truyện tranh"
-  },
-  {
-    id: 3,
-    name: "Tiểu thuyết"
-  },
-  {
-    id: 4,
-    name: "Toán học"
-  }
-]
 
 export default function Home() {
   const classes = useStyles();
@@ -35,6 +15,7 @@ export default function Home() {
   const [nameFilter, setNameFilter] = useState('');
   const [books, setBooks] = useState([]);
   const [page, setPage] = useState(1);
+  const [count, setCount] = useState(1);
   const size = useMemo(() => {
     return 8;
   }, [])
@@ -59,6 +40,7 @@ export default function Home() {
       try {
         const response = await apiGetAllBook(page - 1, size, nameFilter, checked);
         if (response.data.status === 200) {
+          setCount(response.data.data[0].totalPages);
           setBooks(response.data.data);
         }
       } catch(err) {
@@ -103,7 +85,7 @@ export default function Home() {
               </Box>
             </Card>
           </Grid>
-          <Grid item xs={8}>
+          <Grid item xs={10}>
             <Card className={classes.card}>
               <Box className={classes.searchWrap}>
                 <Box sx={{ width: "20em" }}>
@@ -120,7 +102,7 @@ export default function Home() {
               <Grid container spacing={2} sx={{ mb: 2 }}>
                 {books?.map((p, index) => {
                   return (
-                    <Grid item xs={4} key={index}>
+                    <Grid item xs={3} key={index}>
                       <BookCard book={p} />
                     </Grid>
                   )
@@ -129,7 +111,7 @@ export default function Home() {
               <Box className={classes.pagination}>
                 <Pagination
                   className=""
-                  count={10}
+                  count={count}
                   page={page}
                   onChange={(event, value) => setPage(value)}
                   renderItem={(item) => (
