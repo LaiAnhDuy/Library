@@ -20,6 +20,7 @@ public class BookDTO extends BaseDTO{
     private String language;
     private int price;
     private LocalDateTime boughtDate;
+    private String imgUrl;
 
     public BookDTO(BookEntity bookEntity) {
         this.categoryId = bookEntity.getCategoryId();
@@ -31,6 +32,7 @@ public class BookDTO extends BaseDTO{
         this.language = bookEntity.getLanguage();
         this.price = bookEntity.getPrice();
         this.boughtDate = bookEntity.getBoughtDate();
+        this.imgUrl = bookEntity.getImgUrl();
 
         this.id = bookEntity.getId();
         this.code = bookEntity.getCode();
