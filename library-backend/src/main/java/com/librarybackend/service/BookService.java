@@ -42,7 +42,7 @@ public class BookService extends BaseService<BookRepository, BookEntity> {
         bookEntityToUpdate.setBoughtDate(bookToUpdate.getBoughtDate());
         bookEntityToUpdate.setAuthor(bookEntityToUpdate.getAuthor());
         bookEntityToUpdate.setPublisher(bookEntityToUpdate.getPublisher());
-
+        bookEntityToUpdate.setImgUrl(bookToUpdate.getImgUrl());
         update(bookEntityToUpdate);
     }
 

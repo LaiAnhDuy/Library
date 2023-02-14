@@ -3,14 +3,14 @@ import { makeStyles } from "@mui/styles";
 import { Link } from "react-router-dom";
 
 export default function BookCard(props) {
-    const { id, title, image, description, code } = props.book;
+    const { id, title, imgUrl, description, code } = props.book;
     const classes = useStyles();
     return (
         <Card>
             <CardActionArea LinkComponent={Link} to={`/books/${code}`}>
                 <CardMedia
                     component={"img"}
-                    image={image}
+                    image={imgUrl}
                     alt={title}
                     height="140"
                 />

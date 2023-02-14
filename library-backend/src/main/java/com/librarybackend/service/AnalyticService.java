@@ -43,7 +43,7 @@ public class AnalyticService {
         int totalBooks = bookRepository.countDistinctByDeletedFalse();
         int totalBorrowing = borrowingRepository.countDistinctByDeletedFalseAndReturnedFalse();
         int totalReader = userRepository.countDistinctByDeletedFalse();
-        int totalNewUser = userRepository.countNewUserOverTheLastNDays(7, 6);
+        int totalNewUser = userRepository.countNewUserOverTheLastNDays(7, 0);
         for(int i = 0; i<7; ++i) {
             analyticDTO.getNewBorrowingIn7Days().add(borrowingRepository.countNewBorrowingOverTheLastNDays(i+1, i));
             analyticDTO.getNewUserIn7Days().add(userRepository.countNewUserOverTheLastNDays(i+1, i));

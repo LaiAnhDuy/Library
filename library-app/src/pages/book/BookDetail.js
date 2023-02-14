@@ -17,6 +17,7 @@ const INIT_BOOK = {
     description: '',
     language: '',
     price: '',
+    imgUrl: '',
 }
 
 export default function BookDetail(props) {
@@ -65,7 +66,7 @@ export default function BookDetail(props) {
                     <CardContent>
                         <Grid container spacing={2}>
                             <Grid item xs={3} sx={{ display: "flex" }}>
-                                <img src={book.image} alt={book.name} className={classes.img}/>
+                                <img src={book.imgUrl} alt={book.name} className={classes.img}/>
                             </Grid>
                             <Grid item xs={9}>
                                 <Box sx={{ display: 'flex', flexDirection: 'column', height: "100%" }}>
