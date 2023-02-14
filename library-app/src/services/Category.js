@@ -7,6 +7,12 @@ export const apiGetAllCategory = async() => {
     return response;
 }
 
+export const apiGetCategory = async(code) => {
+    let url = dbService + '/category/' + code;
+    const response = await api.get(url);
+    return response;
+}
+
 export const apiCreateCategory = async(data) => {
     let url = dbAdminService + '/category/';
     const response = await api.post(url, data);

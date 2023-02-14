@@ -3,22 +3,30 @@ import { makeStyles } from "@mui/styles";
 import { Link } from "react-router-dom";
 
 export default function BookCard(props) {
-    const { id, title, image, description } = props.book;
+    const { id, title, image, description, code } = props.book;
     const classes = useStyles();
     return (
         <Card>
-            <CardActionArea LinkComponent={Link} to={`/books/${id}`}>
+            <CardActionArea LinkComponent={Link} to={`/books/${code}`}>
                 <CardMedia
                     component={"img"}
                     image={image}
-                    alt="Book image"
+                    alt={title}
                     height="140"
                 />
                 <CardContent>
                     <Typography gutterBottom variant="h6" component="div">
                         {title}
                     </Typography>
-                    <Typography variant="body2" color="text.secondary">
+                    <Typography
+                        variant="body2"
+                        color="text.secondary"
+                        sx={{
+                            display: '-webkit-box',
+                            overflow: 'hidden',
+                            WebkitBoxOrient: 'vertical',
+                            WebkitLineClamp: 1,
+                        }}>
                         {description}
                     </Typography>
                 </CardContent>
