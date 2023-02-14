@@ -3,6 +3,7 @@ package com.librarybackend.service;
 import com.librarybackend.dto.AnalyticDTO;
 import com.librarybackend.dto.BookDTO;
 import com.librarybackend.dto.BorrowingDTO;
+import com.librarybackend.dto.UserDTO;
 import com.librarybackend.dto.filter.BorrowingFilterSearch;
 import com.librarybackend.entity.BorrowingEntity;
 import com.librarybackend.repository.BookRepository;
@@ -67,11 +68,21 @@ public class AnalyticService {
                 .map(BookDTO::new)
                 .collect(Collectors.toMap(BookDTO::getId, Function.identity()));
 
+        List<Long> userIds = borrowingEntities.stream()
+                .map(borrowingEntity -> borrowingEntity.getUserId())
+                .collect(Collectors.toList());
+
+        Map<Long, UserDTO> mapUserEntityById = userService.findByIdIn(userIds)
+                .stream()
+                .map(UserDTO::new)
+                .collect(Collectors.toMap(UserDTO::getId, Function.identity()));
+
         return borrowingEntities
                 .stream()
                 .map(BorrowingDTO::new)
                 .map(borrowingDTO -> {
                     borrowingDTO.setBook(mapBookEntityById.get(borrowingDTO.getBookId()));
+                    borrowingDTO.setUser(mapUserEntityById.get(borrowingDTO.getUserId()));
                     return borrowingDTO;
                 })
                 .collect(Collectors.toList());

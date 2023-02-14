@@ -20,6 +20,7 @@ public class BorrowingDTO extends BaseDTO{
     private boolean returned;
     private LocalDateTime returnedDate;
     private BookDTO book;
+    private UserDTO user;
 
     public BorrowingDTO(BorrowingEntity borrowingEntity) {
         this.userId = borrowingEntity.getUserId();
