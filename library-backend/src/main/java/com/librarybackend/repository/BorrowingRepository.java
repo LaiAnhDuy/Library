@@ -17,14 +17,14 @@ public interface BorrowingRepository extends BaseRepository<BorrowingEntity> {
 
     @Query(value = "select count(*) from borrowing " +
             "where created_date > now() - interval :n day " +
-            "and  create_date < now() - interval :m day " +
+            "and  created_date < now() - interval :m day " +
             "and deleted = false ", nativeQuery = true)
     int countNewBorrowingOverTheLastNDays(@Param("n") int day1, @Param("m") int day2);
 
 
     @Query(value = "select * from borrowing " +
             "where due_date < now() " +
-            "and returned = false" +
+            "and returned = false " +
             "limit 10", nativeQuery = true)
     List<BorrowingEntity> count7Overdued();
 }
