@@ -11,9 +11,10 @@ public interface UserRepository extends BaseRepository<UserEntity> {
     int countDistinctByDeletedFalse();
     @Query(value = "select count(*) from user " +
             "where created_date > now() - interval :n day " +
+            "and create_date < now() - interval :m day " +
             "and deleted = false " +
             "and role_id = 2", nativeQuery = true)
-    int countNewUserOverTheLastNDays(@Param("n") int day);
+    int countNewUserOverTheLastNDays(@Param("n") int day1, @Param("m") int day2);
 
     UserEntity findByCode(String userCode);
 }
