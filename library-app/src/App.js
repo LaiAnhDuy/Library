@@ -13,8 +13,7 @@ function App() {
       <AdminOrderDetail />
       <AdminBookDetail />
     </>
-  )
-
+  );
 }
 
 export default App;

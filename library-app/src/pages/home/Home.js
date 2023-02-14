@@ -1,12 +1,26 @@
-import { Box, Card, Checkbox, Container, FormControl, FormControlLabel, FormGroup, Grid, Pagination, PaginationItem, Radio, TextField, Typography } from "@mui/material";
-import MainLayout from "../../components/layout/MainLayout";
+import {
+  Box,
+  Card,
+  Checkbox,
+  Container,
+  FormControl,
+  FormControlLabel,
+  FormGroup,
+  Grid,
+  Pagination,
+  PaginationItem,
+  Radio,
+  TextField,
+  Typography,
+} from '@mui/material';
+import MainLayout from '../../components/layout/MainLayout';
 import { makeStyles } from '@mui/styles';
-import { useEffect, useMemo, useState } from "react";
-import BookCard from "../../components/home/BookCard";
+import { useEffect, useMemo, useState } from 'react';
+import BookCard from '../../components/home/BookCard';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
-import { apiGetAllBook } from "../../services/Book";
-import { apiGetAllCategory } from "../../services/Category";
+import { apiGetAllBook } from '../../services/Book';
+import { apiGetAllCategory } from '../../services/Category';
 
 export default function Home() {
   const classes = useStyles();
@@ -18,53 +32,56 @@ export default function Home() {
   const [count, setCount] = useState(1);
   const size = useMemo(() => {
     return 8;
-  }, [])
+  }, []);
 
   useEffect(() => {
-    const getCategories = async() => {
+    const getCategories = async () => {
       try {
         const response = await apiGetAllCategory();
         if (response.data.status === 200) {
           setCategories(response.data.data);
         }
-      } catch(err) {  
+      } catch (err) {
         console.log(err);
       }
-    }
+    };
 
     getCategories();
-  }, [])
+  }, []);
 
   useEffect(() => {
-    const getBooks = async() => {
+    const getBooks = async () => {
       try {
-        const response = await apiGetAllBook(page - 1, size, nameFilter, checked);
+        const response = await apiGetAllBook(
+          page - 1,
+          size,
+          nameFilter,
+          checked,
+        );
         if (response.data.status === 200) {
           setCount(response.data.data[0].totalPages);
           setBooks(response.data.data);
         }
-      } catch(err) {
+      } catch (err) {
         console.log(err);
       }
-    }
+    };
 
     getBooks();
-  }, [checked, nameFilter, size, page])
+  }, [checked, nameFilter, size, page]);
 
   const handleChangeFilter = (id) => (event) => {
     setChecked(id);
-  }
+  };
 
   return (
     <MainLayout>
       <Container maxWidth="false">
         <Grid container spacing={2}>
-          <Grid item xs={2} sx={{ height: "100%" }}>
+          <Grid item xs={2} sx={{ height: '100%' }}>
             <Card className={classes.card}>
               <Box>
-                <Typography variant="h6">
-                  Các loại sách
-                </Typography>
+                <Typography variant="h6">Các loại sách</Typography>
                 <Box sx={{ ml: 2 }}>
                   <FormControl component="fieldset" variant="standard">
                     <FormGroup>
@@ -73,11 +90,14 @@ export default function Home() {
                           <FormControlLabel
                             key={p.id}
                             control={
-                              <Radio checked={p.code === checked} onChange={handleChangeFilter(p.code)} />
+                              <Radio
+                                checked={p.code === checked}
+                                onChange={handleChangeFilter(p.code)}
+                              />
                             }
                             label={p.name}
                           />
-                        )
+                        );
                       })}
                     </FormGroup>
                   </FormControl>
@@ -88,7 +108,7 @@ export default function Home() {
           <Grid item xs={10}>
             <Card className={classes.card}>
               <Box className={classes.searchWrap}>
-                <Box sx={{ width: "20em" }}>
+                <Box sx={{ width: '20em' }}>
                   <TextField
                     variant="outlined"
                     label="Search"
@@ -105,7 +125,7 @@ export default function Home() {
                     <Grid item xs={3} key={index}>
                       <BookCard book={p} />
                     </Grid>
-                  )
+                  );
                 })}
               </Grid>
               <Box className={classes.pagination}>
@@ -116,7 +136,10 @@ export default function Home() {
                   onChange={(event, value) => setPage(value)}
                   renderItem={(item) => (
                     <PaginationItem
-                      slots={{ previous: ArrowBackIcon, next: ArrowForwardIcon }}
+                      slots={{
+                        previous: ArrowBackIcon,
+                        next: ArrowForwardIcon,
+                      }}
                       {...item}
                     />
                   )}
@@ -130,12 +153,12 @@ export default function Home() {
         </Grid>
       </Container>
     </MainLayout>
-  )
+  );
 }
 
 const useStyles = makeStyles({
   card: {
-    padding: 12
+    padding: 12,
   },
   searchWrap: {
     display: 'flex',
@@ -146,6 +169,6 @@ const useStyles = makeStyles({
   pagination: {
     display: 'flex',
     width: '100%',
-    justifyContent: 'center'
-  }
-})
+    justifyContent: 'center',
+  },
+});

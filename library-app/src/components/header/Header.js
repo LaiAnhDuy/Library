@@ -21,176 +21,186 @@ import { makeStyles } from '@mui/styles';
 import { Avatar, Box, Chip, Popper } from '@mui/material';
 import SettingsIcon from '@mui/icons-material/Settings';
 import UserSection from './UserSection';
-import LogoImg from '../../assets/images/Logo.png'
+import LogoImg from '../../assets/images/Logo.png';
 
 const drawerWidth = 240;
 
 const openedMixin = (theme) => ({
-    width: drawerWidth,
-    transition: theme.transitions.create('width', {
-        easing: theme.transitions.easing.sharp,
-        duration: theme.transitions.duration.enteringScreen,
-    }),
-    overflowX: 'hidden',
+  width: drawerWidth,
+  transition: theme.transitions.create('width', {
+    easing: theme.transitions.easing.sharp,
+    duration: theme.transitions.duration.enteringScreen,
+  }),
+  overflowX: 'hidden',
 });
 
 const closedMixin = (theme) => ({
-    transition: theme.transitions.create('width', {
-        easing: theme.transitions.easing.sharp,
-        duration: theme.transitions.duration.leavingScreen,
-    }),
-    overflowX: 'hidden',
-    width: `calc(${theme.spacing(7)} + 1px)`,
-    [theme.breakpoints.up('sm')]: {
-        width: `calc(${theme.spacing(8)} + 1px)`,
-    },
+  transition: theme.transitions.create('width', {
+    easing: theme.transitions.easing.sharp,
+    duration: theme.transitions.duration.leavingScreen,
+  }),
+  overflowX: 'hidden',
+  width: `calc(${theme.spacing(7)} + 1px)`,
+  [theme.breakpoints.up('sm')]: {
+    width: `calc(${theme.spacing(8)} + 1px)`,
+  },
 });
 
 export const DrawerHeader = styled('div')(({ theme }) => ({
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'flex-end',
-    padding: theme.spacing(0, 1),
-    // necessary for content to be below app bar
-    ...theme.mixins.toolbar,
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'flex-end',
+  padding: theme.spacing(0, 1),
+  // necessary for content to be below app bar
+  ...theme.mixins.toolbar,
 }));
 
 const AppBar = styled(MuiAppBar, {
-    shouldForwardProp: (prop) => prop !== 'open',
+  shouldForwardProp: (prop) => prop !== 'open',
 })(({ theme, open }) => ({
-    zIndex: theme.zIndex.drawer + 1,
+  zIndex: theme.zIndex.drawer + 1,
+  transition: theme.transitions.create(['width', 'margin'], {
+    easing: theme.transitions.easing.sharp,
+    duration: theme.transitions.duration.leavingScreen,
+  }),
+  ...(open && {
+    marginLeft: drawerWidth,
+    width: `calc(100% - ${drawerWidth}px)`,
     transition: theme.transitions.create(['width', 'margin'], {
-        easing: theme.transitions.easing.sharp,
-        duration: theme.transitions.duration.leavingScreen,
+      easing: theme.transitions.easing.sharp,
+      duration: theme.transitions.duration.enteringScreen,
     }),
-    ...(open && {
-        marginLeft: drawerWidth,
-        width: `calc(100% - ${drawerWidth}px)`,
-        transition: theme.transitions.create(['width', 'margin'], {
-            easing: theme.transitions.easing.sharp,
-            duration: theme.transitions.duration.enteringScreen,
-        }),
-    }),
+  }),
 }));
 
-const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' })(
-    ({ theme, open }) => ({
-        width: drawerWidth,
-        flexShrink: 0,
-        whiteSpace: 'nowrap',
-        boxSizing: 'border-box',
-        ...(open && {
-            ...openedMixin(theme),
-            '& .MuiDrawer-paper': openedMixin(theme),
-        }),
-        ...(!open && {
-            ...closedMixin(theme),
-            '& .MuiDrawer-paper': closedMixin(theme),
-        }),
-    }),
-);
+const Drawer = styled(MuiDrawer, {
+  shouldForwardProp: (prop) => prop !== 'open',
+})(({ theme, open }) => ({
+  width: drawerWidth,
+  flexShrink: 0,
+  whiteSpace: 'nowrap',
+  boxSizing: 'border-box',
+  ...(open && {
+    ...openedMixin(theme),
+    '& .MuiDrawer-paper': openedMixin(theme),
+  }),
+  ...(!open && {
+    ...closedMixin(theme),
+    '& .MuiDrawer-paper': closedMixin(theme),
+  }),
+}));
 
 const ListItem = [
-    {
-        name: 'Trang chủ',
-        icon: DashboardIcon,
-        path: '/'
-    },
-    {
-        name: 'Danh sách mượn',
-        path: '/user/books/borrowing'
-    },
-]
+  {
+    name: 'Trang chủ',
+    icon: DashboardIcon,
+    path: '/',
+  },
+  {
+    name: 'Danh sách mượn',
+    path: '/user/books/borrowing',
+  },
+];
 
 export default function Header() {
-    const classes = useStyles();
-    const theme = useTheme();
-    const [open, setOpen] = React.useState(false);
-    const location = useLocation();
-    const selectedIndex = React.useMemo(() => {
-        const selectedId = location.pathname;
-        const index = ListItem.findIndex((Item) => Item.path === selectedId);
-        return index === -1 ? 0 : index;
-    }, [location]);
+  const classes = useStyles();
+  const theme = useTheme();
+  const [open, setOpen] = React.useState(false);
+  const location = useLocation();
+  const selectedIndex = React.useMemo(() => {
+    const selectedId = location.pathname;
+    const index = ListItem.findIndex((Item) => Item.path === selectedId);
+    return index === -1 ? 0 : index;
+  }, [location]);
 
+  const handleDrawerOpen = () => {
+    setOpen(true);
+  };
 
-    const handleDrawerOpen = () => {
-        setOpen(true);
-    };
+  const handleDrawerClose = () => {
+    setOpen(false);
+  };
 
-    const handleDrawerClose = () => {
-        setOpen(false);
-    };
+  const handleToggle = () => {};
 
-    const handleToggle = () => {
-
-    }
-
-    return (
-        <>
-            <CssBaseline />
-            <AppBar position="fixed" className={classes.appbar}>
-                <Toolbar sx={{ justifyContent: "space-between" }}>
-                    <Box sx={{ display: "flex", justifyContent: "space-around", alignItems: "center" }}>
-                        <IconButton
-                            // color="inherit"
-                            aria-label="open drawer"
-                            // onClick={handleDrawerOpen}
-                            edge="start"
-                            sx={{
-                                marginRight: 5,
-                            }}
+  return (
+    <>
+      <CssBaseline />
+      <AppBar position="fixed" className={classes.appbar}>
+        <Toolbar sx={{ justifyContent: 'space-between' }}>
+          <Box
+            sx={{
+              display: 'flex',
+              justifyContent: 'space-around',
+              alignItems: 'center',
+            }}
+          >
+            <IconButton
+              // color="inherit"
+              aria-label="open drawer"
+              // onClick={handleDrawerOpen}
+              edge="start"
+              sx={{
+                marginRight: 5,
+              }}
+            >
+              <MenuIcon />
+            </IconButton>
+            <Box
+              component={Link}
+              to="/"
+              sx={{
+                display: 'flex',
+                alignItems: 'center',
+                textDecoration: 'none',
+              }}
+            >
+              <img src={LogoImg} alt="Logo" className={classes.logo} />
+              <Typography
+                variant="body1"
+                color="primary"
+                sx={{ fontSize: 20, fontWeight: 'bold' }}
+              >
+                Library
+              </Typography>
+            </Box>
+          </Box>
+          <Box>
+            <List sx={{ display: 'flex', justifyContent: 'space-around' }}>
+              {ListItem.map((p, index) => {
+                return (
+                  <ListItemButton
+                    key={p.name}
+                    component={Link}
+                    to={p.path}
+                    selected={index === selectedIndex}
+                    sx={{
+                      minHeight: 48,
+                      justifyContent: open ? 'initial' : 'center',
+                      px: 2.5,
+                    }}
+                  >
+                    <ListItemText
+                      primary={
+                        <Typography
+                          variant="body1"
+                          color={selectedIndex === index ? 'primary' : '#000'}
                         >
-                            <MenuIcon />
-                        </IconButton>
-                        <Box
-                            component={Link}
-                            to="/"
-                            sx={{ display: 'flex' , alignItems: 'center', textDecoration: 'none' }}>
-                            <img src={LogoImg} alt="Logo" className={classes.logo}/>
-                            <Typography 
-                                variant="body1" 
-                                color="primary" 
-                                sx={{ fontSize: 20, fontWeight: 'bold' }}
-                            >
-                                Library
-                            </Typography>
-                        </Box>
-                    </Box>
-                    <Box>
-                        <List sx={{ display: "flex", justifyContent: "space-around" }}>
-                            {ListItem.map((p, index) => {
-                                return (
-                                    <ListItemButton
-                                        key={p.name}
-                                        component={Link}
-                                        to={p.path}
-                                        selected={index === selectedIndex}
-                                        sx={{
-                                            minHeight: 48,
-                                            justifyContent: open ? 'initial' : 'center',
-                                            px: 2.5,
-                                        }}
-                                    >
-                                        <ListItemText primary={
-                                            <Typography 
-                                                variant='body1' 
-                                                color={selectedIndex === index ? 'primary' : '#000'}
-                                            >
-                                                {p.name}
-                                            </Typography>
-                                        }/>
-                                    </ListItemButton>
-                                )
-                            })}
-                        </List>
-                    </Box>
-                    <Box>
-                        <UserSection />
-                    </Box>
-                </Toolbar>
-            </AppBar>
-            {/* <Drawer variant="permanent" open={open}>
+                          {p.name}
+                        </Typography>
+                      }
+                    />
+                  </ListItemButton>
+                );
+              })}
+            </List>
+          </Box>
+          <Box>
+            <UserSection />
+          </Box>
+        </Toolbar>
+      </AppBar>
+      {/* <Drawer variant="permanent" open={open}>
                 <DrawerHeader>
                     <IconButton onClick={handleDrawerClose}>
                         {theme.direction === 'rtl' ? <ChevronRightIcon /> : <ChevronLeftIcon />}
@@ -227,21 +237,20 @@ export default function Header() {
                     })}
                 </List>
             </Drawer> */}
-        </>
-    );
+    </>
+  );
 }
 
 const useStyles = makeStyles({
-    appbar: {
-        '&.MuiAppBar-root': {
-            backgroundColor: "#fff",
-            // boxShadow: "none",
-        }
-
+  appbar: {
+    '&.MuiAppBar-root': {
+      backgroundColor: '#fff',
+      // boxShadow: "none",
     },
-    logo: {
-        width: 60,
-        objectFit: 'cover',
-        marginRight: 5
-    }
-})
+  },
+  logo: {
+    width: 60,
+    objectFit: 'cover',
+    marginRight: 5,
+  },
+});

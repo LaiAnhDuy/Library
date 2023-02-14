@@ -27,38 +27,38 @@ export const PageRoutes = [
   },
   {
     path: path.BOOK_DETAIL,
-    element: BookDetail
+    element: BookDetail,
   },
   {
     path: path.USER_LIST_FAVORITE,
-    element: ListBook
+    element: ListBook,
   },
   {
     path: path.USER_LIST_BORROWING,
-    element: ListBorrowingBook
+    element: ListBorrowingBook,
   },
   {
     path: path.USER_LIST_BORROWED,
-    element: ListBorrowedBook
+    element: ListBorrowedBook,
   },
   {
     path: path.ADMIN_DASHBOARD,
-    element: DashBoard
+    element: DashBoard,
   },
   {
     path: path.ADMIN_BOOK,
-    element: AdminBook
+    element: AdminBook,
   },
   {
     path: path.ADMIN_USER,
-    element: AdminUser
+    element: AdminUser,
   },
   {
     path: path.ADMIN_ORDER,
-    element: AdminOrder
+    element: AdminOrder,
   },
   {
     path: path.ADMIN_CATEGORY,
-    element: AdminCategory
-  }
+    element: AdminCategory,
+  },
 ];
